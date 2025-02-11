@@ -1,0 +1,129 @@
+{% load static %}
+<header class="flex justify-between h-20 bg-black items-center p-3 px-4">
+    <div>
+        <a href="{% url 'customers:index' %}">
+            <img src="{% static 'images/logo0.png' %}" alt="Logo" class="h-16 w-28">
+        </a>
+    </div>
+    
+    <!-- Desktop Navigation -->
+    <div class="hidden md:block ml-[40%] mt-8">
+        <nav class="hidden md:flex justify-center">
+            <a href="{% url 'customers:index' %}" 
+               class="text-white ml-20 hover:text-red-500 text-[20px] font-bold transition duration-500 ease-in-out hover:underline hover:scale-110">
+                Home
+            </a>
+            <a href="{% url 'customers:service' %}" 
+               class="text-white ml-20 hover:text-red-500 text-[20px] font-bold transition duration-500 ease-in-out hover:underline hover:scale-110">
+                Services
+            </a>
+            <a href="{% url 'customers:contact' %}" 
+               class="text-white ml-20 hover:text-red-500 text-[20px] font-bold transition duration-500 ease-in-out hover:underline hover:scale-110">
+                Contact us
+            </a>
+        </nav>        
+    </div>
+
+    <!-- Account Icon -->
+    <div class="hidden md:block relative">   
+        <a href="#" id="accountIcon">
+            <img src="{% static 'images/account.png' %}" alt="Account" class="h-8 w-10">
+        </a>
+    
+        <!-- Profile Menu with Animation -->
+        <div id="profile-menu" 
+             class="hidden opacity-0 translate-y-[-10px] absolute z-50 top-[80px] right-0 bg-black border shadow-lg rounded-xl p-5 w-[240px] transition-all duration-300 ease-in-out">
+            <img src="{% static 'images/account.png' %}" alt="Account" class="h-8 w-10 block mx-auto mb-3">
+            
+            <p class="text-[16px] py-2 text-white hover:text-red-500">
+                <a href="#">Manage Profile</a>
+            </p>
+            <p class="text-[16px] py-2 text-white hover:text-red-500">
+                <a href="#">View Orders</a>
+            </p>
+            {% if user.is_authenticated %}
+            <p class="text-[16px] py-2 text-white hover:text-red-500">
+                <a href="{% url 'customers:logout' %}">Logout</a>
+            </p>
+            {% else %}
+            <p class="text-[16px] pt-2 text-white hover:text-red-500">
+                <a href="{% url 'customers:login' %}">Login</a>
+            </p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Mobile Menu Button -->
+    <button id="menuButton" class="block md:hidden text-white" aria-expanded="false" aria-controls="mobileMenu">
+        <i class='bx bx-menu text-2xl'></i>
+    </button>
+</header>
+
+<!-- Mobile Navigation with Slide-in Animation -->
+<!-- Mobile Navigation with Slide-in Animation -->
+<nav id="mobileMenu" 
+     class="fixed left-[-100%] top-0 h-[35vh] w-[80%] bg-black text-white flex flex-col space-y-2 p-4 md:hidden transition-all duration-300 ease-in-out" 
+     aria-hidden="true">
+    <a href="{% url 'customers:index' %}" class="block pb-3 mb-3 border-b border-gray-300 hover:underline">Home</a>
+    <a href="{% url 'customers:service' %}" class="block pb-3 mb-3 border-b border-gray-300 hover:underline">Services</a>
+    <a href="{% url 'customers:contact' %}" class="block pb-3 mb-3 border-b border-gray-300 hover:underline">Contact us</a>
+    <p class="pb-3 mb-3 border-b border-gray-300">
+        <a href="#" class="text-[16px] font-semibold hover:text-purple-500">View Orders</a>
+    </p>
+    <p class="pb-3 mb-3 border-b border-gray-300">
+        <a href="#" class="text-[16px] font-semibold hover:text-purple-500">Manage Account</a>
+    </p>
+    {% if user.is_authenticated %}
+    <p class="pb-3 mb-3 border-b border-gray-300">
+        <a href="{% url 'customers:logout' %}" class="text-[16px] font-semibold hover:text-purple-500">Logout</a>
+    </p>
+    {% else %}
+    <p class="pb-3 mb-3 border-b border-gray-300">
+        <a href="#" class="text-[16px] font-semibold hover:text-purple-500">Login</a>
+    </p>
+    {% endif %}
+</nav>
+
+
+<!-- JavaScript -->
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const menuButton = document.getElementById('menuButton');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const accountIcon = document.getElementById('accountIcon');
+        const profileMenu = document.getElementById('profile-menu');
+
+        // Toggle Mobile Menu with Slide Animation
+        menuButton.addEventListener('click', () => {
+            const isExpanded = menuButton.getAttribute('aria-expanded') === 'true';
+            menuButton.setAttribute('aria-expanded', !isExpanded);
+            mobileMenu.style.left = isExpanded ? "-100%" : "0";  // Slide in from the left
+            mobileMenu.setAttribute('aria-hidden', isExpanded);
+        });
+
+        // Toggle Profile Menu with Fade-in Effect
+        accountIcon.addEventListener('click', (event) => {
+            event.preventDefault();
+            if (profileMenu.classList.contains("hidden")) {
+                profileMenu.classList.remove("hidden");
+                setTimeout(() => {
+                    profileMenu.style.opacity = "1";
+                    profileMenu.style.transform = "translateY(0)";
+                }, 10);
+            } else {
+                profileMenu.style.opacity = "0";
+                profileMenu.style.transform = "translateY(-10px)";
+                setTimeout(() => profileMenu.classList.add("hidden"), 300);
+            }
+        });
+
+        // Close profile menu when clicking outside
+        document.addEventListener('click', (event) => {
+            if (!profileMenu.contains(event.target) && !accountIcon.contains(event.target)) {
+                profileMenu.style.opacity = "0";
+                profileMenu.style.transform = "translateY(-10px)";
+                setTimeout(() => profileMenu.classList.add("hidden"), 300);
+            }
+        });
+    });
+</script>

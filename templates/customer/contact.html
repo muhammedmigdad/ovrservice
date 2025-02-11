@@ -1,0 +1,29 @@
+{% extends "base/customer-base.html" %} 
+
+{% block container %} 
+
+{% load static %}
+
+{% include 'includes/customer-header.html' %}
+    <section class="home-bg1 bg-gray-900 text-white py-20 min-h-screen">
+        <h1 class="text-4xl font-semibold text-center">Contact Us</h1>
+      
+        <p class="text-lg font-medium text-gray-400 mt-8 mx-auto text-center w-[90%] md:w-[70%]">
+          Lorem ipsum dolor sit amet consectetur. Ut ut a eu egestas turpis amet leo. Pellentesque mauris rhoncus dignissim faucibus consequat habitant elit est lorem. Scelerisque vitae amet convallis adipiscing. Cras a quisque quis velit egestas aliquam mattis aliquam.
+        </p>
+      
+        <div class="flex flex-col sm:flex-row justify-center gap-12 mt-12">
+          <div class="bg-gray-800 p-8 rounded-xl w-full sm:w-[45%] lg:w-[30%] text-center shadow-lg">
+            <img src="{% static './images/phone1.png' %}" alt="Phone Icon" class="mx-auto mb-6 w-16 h-16" />
+            <h2 class="text-xl font-semibold">Calling Support</h2>
+            <p class="text-lg font-medium text-gray-300 mt-2">7767870917</p>
+          </div>
+      
+          <div class="bg-gray-800 p-8 rounded-xl w-full sm:w-[45%] lg:w-[30%] text-center shadow-lg">
+            <img src="{% static './images/message.png' %}" alt="Message Icon" class="mx-auto mb-6 w-16 h-16" />
+            <h2 class="text-xl font-semibold">Email Information</h2>
+            <p class="text-lg font-medium text-gray-300 mt-2">info@mechanic.com</p>
+          </div>
+        </div>
+      </section>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "base/customer-base.html" %} 
+
+{% block container %} 
+
+{% load static %}
+
+{% include 'includes/customer-header.html' %}
+<section  class="home-bg2 pt-9">
+        <div class="flex justify-center items-center">
+            <div class="flex items-center bg-gray-500 opacity-95 p-2 rounded-full shadow-md w-64">
+                <input 
+                type="text" 
+                placeholder="Search" 
+                class="bg-transparent text-white placeholder-gray-400 outline-none w-full px-2"
+                />
+                <button class="text-white">
+                    <img src="{% static './images/search.png' %}" alt="images">
+                </button>
+            </div> 
+        </div>
+        <div class="flex justify-center items-center mt-10">
+            <ul class="bg-[#272627] text-white w-80 rounded-lg divide-y divide-gray-700 shadow-lg">
+            <li class="px-4 py-2 text-center">Battery Service</li>
+            <li class="px-4 py-2 text-center">Puncher Service</li>
+            <li class="px-4 py-2 text-center">Clutch Cable Service</li>
+            <li class="px-4 py-2 text-center">Engine Service</li>
+            <li class="px-4 py-2 text-center">A/C Compressor Service</li>
+            <li class="px-4 py-2 text-center">Break Pad Service</li>
+            </ul>
+        </div>
+        <ul class="flex justify-center items-center pl-52 mt-7">
+        <button class="bg-[#B1BA08] text-[#ffff] text-[20px] font-medium py-2 px-3 rounded-xl">Done</button>
+
+        </ul>  
+          
+
+</section>
+{% endblock %}

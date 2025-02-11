@@ -1,0 +1,64 @@
+{% extends "base/customer-base.html" %}
+
+{% block container %}
+
+{% load static %}
+
+{% include 'includes/customer-header.html' %}
+
+<section class="bg-black h-[100vh] pt-24 ">
+  <div class="max-w-sm mx-auto pt-20 bg-[#252424]  text-white p-6 rounded-lg shadow-md  ">
+    <!-- Price Details -->
+    <div class="mb-6">
+      <h2 class="text-lg font-semibold mb-4">Price Details</h2>
+      <div class="flex justify-between mb-2">
+        <span>Price</span>
+        <span class="font-medium">₹699</span>
+      </div>
+      <div class="flex justify-between mb-2">
+        <span>Offer Price</span>
+        <span class="font-medium">₹499</span>
+      </div>
+      <div class="flex justify-between mb-2">
+        <span>Delivery Charge</span>
+        <span class="font-medium text-yellow-400">₹40</span>
+      </div>
+      <div class="flex justify-between border-t border-gray-700 pt-2">
+        <span class="font-semibold">Amount Payable</span>
+        <span class="font-semibold">₹449</span>
+      </div>
+    </div>
+
+    <!-- Payment Options -->
+    <div class="mb-6 mt-16">
+      <h2 class="text-lg font-semibold mb-4">Payment Options</h2>
+      <div class="space-y-2">
+        <label class="flex items-center space-x-3">
+          <input type="radio" name="payment"
+            class="w-4 h-4 text-yellow-400 bg-gray-800 border-gray-700 focus:ring-yellow-400 focus:ring-2" />
+          <span>Credit Card</span>
+        </label>
+        <label class="flex items-center space-x-3">
+          <input type="radio" name="payment"
+            class="w-4 h-4 text-yellow-400 bg-gray-800 border-gray-700 focus:ring-yellow-400 focus:ring-2" />
+          <span>Net Banking</span>
+        </label>
+        <label class="flex items-center space-x-3">
+          <input type="radio" name="payment"
+            class="w-4 h-4 text-yellow-400 bg-gray-800 border-gray-700 focus:ring-yellow-400 focus:ring-2" />
+          <span>COD</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Pay Button -->
+    <button
+      class="w-full py-2 text-center text-gray-900 font-semibold bg-yellow-400 hover:bg-yellow-500 rounded-lg focus:outline-none focus:ring focus:ring-yellow-300">
+      Pay
+    </button>
+  </div>
+
+</section>
+
+
+{% endblock %}
