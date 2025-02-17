@@ -17,6 +17,9 @@ class Customer(CommonModel):
 
         return f'{self.user.phone_number}-{self.user.email}'
     
+    
+
+    
 
 
 

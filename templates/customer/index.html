@@ -74,15 +74,15 @@
     
     <section class="home-bg">
         <div class="p-4 sm:p-8 md:p-12 lg:p-[180px]">
-            <h1 class="text-white text-center text-[24px] sm:text-[30px] font-bold ">Store</h1>
+            <h1 class="text-white text-center text-[24px] sm:text-[30px] font-bold">Store</h1>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-10">
-            {% for store in store %}
-                <div class="bg-[#252424] px-5 py-4 rounded-xl">
-                    <a href="{% url 'customers:store' %}">
-                        <img class="w-full" src="{{store.image.url}}" alt="Image 3">
-                        <h1 class="text-[20px] font-medium mt-7 text-white">{{store.name}}</h1>
-                    </a>
-                </div>
+                {% for store in store %}
+                    <div class="bg-[#252424] px-5 py-4 rounded-xl">
+                        <a href="{% url 'customers:store' id=store.id %}">
+                            <img class="w-full" src="{{ store.image.url }}" alt="{{ store.name }}">
+                            <h1 class="text-[20px] font-medium mt-7 text-white">{{ store.name }}</h1>
+                        </a>
+                    </div>
                 {% endfor %}
             </div>
         </div>
@@ -90,92 +90,97 @@
     
     <section class="bg-black">
         <div class="p-4 sm:p-8 md:p-[100px]">
-            <h1 class="text-white text-center text-[24px] sm:text-[30px] font-bold pt-10">Customer Review</h1>
-            <p class="text-center w-full sm:w-[70%] m-auto text-neutral-200">
+            <!-- Heading -->
+            <h1 class="text-white text-center text-[24px] sm:text-[30px] font-bold pt-10">Customer Reviews</h1>
+            <!-- Description -->
+            <p class="text-center w-full sm:w-[70%] mx-auto text-neutral-200">
                 Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nobis sequi quibusdam sunt, ipsam eveniet laborum architecto corporis, explicabo, repellendus sint corrupti ex similique praesentium mollitia.
             </p>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mt-10">
-                <div class="bg-[#131212] px-5 py-4 rounded-xl">
-                    <div class="flex px-10">
-                        <img class="" src="{% static './images/mechanic.png' %}" alt="Image">
-                        <div class="ml-6">
-                            <h1 class="text-[24px] font-semibold text-white">Adil</h1>
-                            <ul class="flex ">
-                                <img class="w-full" src="{% static './images/star-1.png' %}" alt="Image">
-                                <img class="w-full ml-2" src="{% static './images/star-1.png' %}" alt="Image">
-                                <img class="w-full ml-2" src="{% static './images/star-1.png' %}" alt="Image">
-                                <img class="w-full ml-2" src="{% static './images/star-1.png' %}" alt="Image">
-                            </ul>
+    
+            <!-- Swiper Container -->
+            <div class="swiper-container mt-10 relative" style="overflow-x: hidden; width: 100%;">
+                <!-- Swiper Wrapper -->
+                <div class="swiper-wrapper">
+                    {% for review in reviews %}
+                    <div class="swiper-slide bg-[#131212] px-5 py-4 rounded-xl">
+                        <!-- Review Header -->
+                        <div class="flex flex-col sm:flex-row items-center sm:items-start px-4 sm:px-10">
+                            {% if review.image %}
+                                <img class="w-16 h-16 rounded-full" src="{{ review.image.url }}" alt="Review Image">
+                            {% else %}
+                                <img class="w-16 h-16 rounded-full" src="{% static 'images/default.png' %}" alt="Default Image">
+                            {% endif %}
+                            <div class="ml-0 sm:ml-6 mt-4 sm:mt-0 text-center sm:text-left">
+                                <h1 class="text-[24px] font-semibold text-white">{{ review.name }}</h1>
+                                <ul class="flex justify-center sm:justify-start">
+                                    {% for i in "x"|ljust:review.star %}
+                                        <img class="w-5 ml-1" src="{% static 'images/star-1.png' %}" alt="Star">
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                        <!-- Review Description -->
+                        <div class="p-4 sm:p-10">
+                            <p class="text-[16px] md:text-[18px] lg:text-[20px] font-normal text-white leading-7 lg:leading-9">
+                                {{ review.description }}
+                            </p>
                         </div>
                     </div>
-                    <div class="p-10">
-                        <p class="text-[16px] md:text-[18px] lg:text-[20px] font-normal text-white  w-full leading-7 lg:leading-9">
-                            Lorem ipsum dolor sit amet consectetur. Dui aenean praesent pulvinar erat morbi morbi. At et elementum ultrices diam feugiat nulla ultrices risus. Eu amet a proin malesuada in praesent lacus. Sapien bibendum dignissim enim tellus facilisis.
-                        </p>
-                    </div>
+                {% endfor %}
+                
                 </div>
-                <div class="bg-[#131212] px-5 py-4 rounded-xl">
-                    <div class="flex px-10">
-                        <img class="" src="{% static './images/mechanic.png' %}" alt="Image">
-                        <div class="ml-6">
-                            <h1 class="text-[24px] font-semibold text-white">Adil</h1>
-                            <ul class="flex ">
-                                <img class="w-full" src="{% static './images/star-1.png' %}" alt="Image">
-                                <img class="w-full ml-2" src="{% static './images/star-1.png' %}" alt="Image">
-                                <img class="w-full ml-2" src="{% static './images/star-1.png' %}" alt="Image">
-                                <img class="w-full ml-2" src="{% static './images/star-1.png' %}" alt="Image">
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="p-10">
-                        <p class="text-[16px] md:text-[18px] lg:text-[20px] font-normal text-white  w-full leading-7 lg:leading-9">
-                            Lorem ipsum dolor sit amet consectetur. Dui aenean praesent pulvinar erat morbi morbi. At et elementum ultrices diam feugiat nulla ultrices risus. Eu amet a proin malesuada in praesent lacus. Sapien bibendum dignissim enim tellus facilisis.
-                        </p>
-                    </div>
-                </div>
-                <div class="bg-[#131212] px-5 py-4 rounded-xl">
-                    <div class="flex px-10">
-                        <img class="" src="{% static './images/mechanic.png' %}" alt="Image">
-                        <div class="ml-6">
-                            <h1 class="text-[24px] font-semibold text-white">Adil</h1>
-                            <ul class="flex ">
-                                <img class="w-full" src="{% static './images/star-1.png' %}" alt="Image">
-                                <img class="w-full ml-2" src="{% static './images/star-1.png' %}" alt="Image">
-                                <img class="w-full ml-2" src="{% static './images/star-1.png' %}" alt="Image">
-                                <img class="w-full ml-2" src="{% static './images/star-1.png' %}" alt="Image">
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="p-10">
-                        <p class="text-[16px] md:text-[18px] lg:text-[20px] font-normal text-white  w-full leading-7 lg:leading-9">
-                            Lorem ipsum dolor sit amet consectetur. Dui aenean praesent pulvinar erat morbi morbi. At et elementum ultrices diam feugiat nulla ultrices risus. Eu amet a proin malesuada in praesent lacus. Sapien bibendum dignissim enim tellus facilisis.
-                        </p>
-                    </div>
-                </div>
-                <div class="bg-[#131212] px-5 py-4 rounded-xl">
-                    <div class="flex px-10">
-                        <img class="" src="{% static './images/mechanic.png' %}" alt="Image">
-                        <div class="ml-6">
-                            <h1 class="text-[24px] font-semibold text-white">Adil</h1>
-                            <ul class="flex ">
-                                <img class="w-full" src="{% static './images/star-1.png' %}" alt="Image">
-                                <img class="w-full ml-2" src="{% static './images/star-1.png' %}" alt="Image">
-                                <img class="w-full ml-2" src="{% static './images/star-1.png' %}" alt="Image">
-                                <img class="w-full ml-2" src="{% static './images/star-1.png' %}" alt="Image">
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="p-10">
-                        <p class="text-[16px] md:text-[18px] lg:text-[20px] font-normal  text-white w-full leading-7 lg:leading-9">
-                            Lorem ipsum dolor sit amet consectetur. Dui aenean praesent pulvinar erat morbi morbi. At et elementum ultrices diam feugiat nulla ultrices risus. Eu amet a proin malesuada in praesent lacus. Sapien bibendum dignissim enim tellus facilisis.
-                        </p>
-                    </div>
-                </div>
+    
+                <!-- Navigation Buttons -->
+                <div class="swiper-button-next text-white"></div>
+                <div class="swiper-button-prev text-white"></div>
+    
+                <!-- Pagination -->
+                <div class="swiper-pagination"></div>
             </div>
         </div>
     </section>
     
-    
 {% include 'includes/customer-footer.html' %}
     
+
+<script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const swiper = new Swiper('.swiper-container', {
+            loop: true, // Enable infinite loop
+            autoplay: {
+                delay: 3000, // Autoplay delay in milliseconds
+                disableOnInteraction: false, // Continue autoplay even after user interaction
+            },
+            pagination: {
+                el: '.swiper-pagination', // Pagination container
+                clickable: true, // Allow clicking on pagination bullets
+            },
+            navigation: {
+                nextEl: '.swiper-button-next', // Next button
+                prevEl: '.swiper-button-prev', // Previous button
+            },
+            breakpoints: {
+                // Responsive breakpoints
+                320: {
+                    slidesPerView: 1, // Show 1 slide on extra small screens
+                    spaceBetween: 10, // Space between slides
+                },
+                640: {
+                    slidesPerView: 1, // Show 1 slide on small screens
+                    spaceBetween: 20,
+                },
+                768: {
+                    slidesPerView: 2, // Show 2 slides on medium screens
+                    spaceBetween: 30,
+                },
+                1024: {
+                    slidesPerView: 3, // Show 3 slides on large screens
+                    spaceBetween: 40,
+                },
+            },
+        });
+    });
+</script>
 {% endblock %}

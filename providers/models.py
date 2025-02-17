@@ -7,42 +7,42 @@ from customers.models import Customer
 class ProviderUser(CommonModel):
     provideruser_id = models.CharField(max_length=100)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    
+
     class Meta:
         db_table = 'provideruser'
-        verbose_name = 'provideruser'
-        verbose_name_plural = 'providerusers'
+        verbose_name = 'Provider User'
+        verbose_name_plural = 'Provider Users'
         ordering = ["-id"]
-
 
     def __str__(self):
         return f'{self.user.phone_number}-{self.user.email}'
-    
 
-    
-    
-class Service(CommonModel):
-    title = models.CharField(max_length=255)
-    provider = models.ForeignKey(ProviderUser, on_delete=models.CASCADE)
+class ProviderService(CommonModel):
+    name = models.CharField(max_length=255)
     description = models.TextField()
-    image = models.ImageField(upload_to='services/')
 
     def __str__(self):
-        return self.title
+        return self.name
 
-class ServiceRequest(CommonModel):
+class ProviderServiceRequest(CommonModel):
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('in_progress', 'In Progress'),
+        ('completed', 'Completed'),
+    ]
+
     name = models.CharField(max_length=255)
     email = models.EmailField(blank=True, null=True)
-    phone = models.CharField(max_length=15)
-    service = models.ForeignKey(Service, on_delete=models.CASCADE)
+    phone = models.CharField(max_length=20)
+    service = models.ForeignKey(ProviderService, on_delete=models.CASCADE)
+    provider_user = models.ForeignKey(ProviderUser, on_delete=models.CASCADE, related_name="service_requests")
     details = models.TextField()
-    submitted_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        db_table = 'customers_service_request'
-        verbose_name = 'service_request'
-        verbose_name_plural = 'service_requests'
-        ordering = ["-id"]
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.service.title
+        return f'{self.name} - {self.service.name} ({self.status})'
+
+    
+    
+    

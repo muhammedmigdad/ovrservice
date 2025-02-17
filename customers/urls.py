@@ -24,7 +24,10 @@ urlpatterns = [
     path("products/", views.products, name="products"),
     path("product/", views.product, name="product"),
     
-    path("service/", views.service, name="service"),
+    path('service/', views.request_service, name='service'),
+    # path('reviews/', views.reviews_list, name='reviews_list'),
+    path('mechanic-service/', views.mechanic_service, name='mechanic-service'),
+    path('mechanic-service-requst/<int:request_id>/', views.mechanic_service_request, name='mechanic-service-requst'),
     
-    path("store/", views.store, name="store"),
+    path("store/<int:id>/", views.store, name="store"),
 ]

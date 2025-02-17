@@ -1,13 +1,14 @@
 from django.shortcuts import get_object_or_404, render, reverse, redirect
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout, get_user_model
 from django.contrib.auth.decorators import login_required
-from django.http.response import HttpResponseRedirect
+from django.http.response import HttpResponseRedirect, HttpResponse
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from common.decorators import allow_manager
 from common.functions import generate_form_errors
 from users.models import User
+from django.db.models import Sum
 from providers.models import *
 from customers.models import *
 from spareparts.models import *
@@ -115,21 +116,40 @@ def otp(request):
     return render(request, 'customer/otp.html')
 
 
-
 @login_required(login_url='/login/')
-def index(request, id):
+def index(request):
     store = Store.objects.all()
-    
+    reviews = Review.objects.all()
     storecategory = StoreCategory.objects.all()
-    
+
+    # Prepare the reviews with rating stars
+    for review in reviews:
+        review.star = int(review.rating)  # Adding star to each review
     
     context = {
         'store': store,
-       'storecategory': storecategory
+        'storecategory': storecategory,
+        'reviews': reviews,
     }
     
     return render(request, 'customer/index.html', context=context)
 
+
+@login_required(login_url='/login/')
+def store(request, id):
+    storecategory = StoreCategory.objects.all()
+    
+    if id:
+        stores = Store.objects.filter(storecategory__id=id)
+    else:
+        stores = Store.objects.all()
+    
+    context = {
+        'storecategory': storecategory,
+        'stores': stores,
+    }
+    
+    return render(request, 'customer/store.html', context=context)
 
 
 @login_required(login_url='/login/')
@@ -163,11 +183,110 @@ def product(request):
 
 
 
+
+
+
+# def reviews_list(request):
+#     reviews = Review.objects.all()  
+#     return render(request, "customer/index.html", {"reviews": reviews})
+
+
+# @login_required(login_url='/login/')
+# def service(request):
+#     services = Service.objects.all() 
+#     # if not services.exists():
+#     #     print("No services found!")  # Debugging
+    
+#     # cart_count = 0
+#     # if request.user.is_authenticated:
+#     #     customer = Customer.objects.filter(user=request.user).first()
+#     #     if customer:
+#     #         cart_count = CartItem.objects.filter(customer=customer).aggregate(total=Sum('quantity'))['total'] or 0
+
+#     return render(request, 'customer/service.html', {"services": services})
+
 @login_required(login_url='/login/')
-def service(request):
-    return render(request, 'customer/service.html')
+def request_service(request):
+    user = request.user
+    services = Service.objects.all()
+
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        email = request.POST.get('email', '')
+        phone = request.POST.get('phone')
+        service_id = request.POST.get('service')
+        details = request.POST.get('details')
+
+        if not name or not phone or not service_id or not details:
+            messages.error(request, "All fields are required")
+            return redirect('customers:service')  # Redirect back with an error message
+
+        try:
+            service = Service.objects.get(id=service_id)
+        except Service.DoesNotExist:
+            messages.error(request, "Invalid service selected")
+            return redirect('customers:service')  # Redirect back with an error message
+
+        # Save the service request
+        ServiceRequest.objects.create(
+            name=name,
+            email=email,
+            phone=phone,
+            service=service,
+            details=details
+        )
+
+        messages.success(request, "Service request submitted successfully!")
+        return redirect('customers:service')
+
+    # Calculate cart count for authenticated users
+    cart_count = 0
+    if request.user.is_authenticated:
+        customer = Customer.objects.filter(user=request.user).first()
+        if customer:
+            cart_count = CartItem.objects.filter(customer=customer).aggregate(total=Sum('quantity'))['total'] or 0
+
+    context = {
+        'cart_count': cart_count,
+        'services': services,
+    }
+
+    return render(request, 'customer/service.html', context=context)
+
+@login_required(login_url='/login/')
+def mechanic_service(request):
+    """View for mechanics to manage service requests"""
+    user = request.user
+    service_requests = ServiceRequest.objects.all().order_by('-created_datetime')  # Use 'created_datetime' instead of 'created_at'
+
+    context = {
+        'service_requests': service_requests,
+    }
+    return render(request, 'customer/mechanic-service.html', context)
 
 
 @login_required(login_url='/login/')
-def store(request):
-    return render(request, 'customer/store.html')
+def mechanic_service_request(request, request_id):
+    """Allow mechanics to update service request status"""
+    user = request.user
+    
+    # Check if the user is a provider (mechanic)
+    if not ProviderUser.objects.filter(user=user).exists():
+        messages.error(request, "Unauthorized access! You must be a provider to update service requests.")
+        return redirect('customers:mechanic_service')
+
+    # Get the service request
+    service_request = get_object_or_404(ServiceRequest, id=request_id)
+
+    if request.method == 'POST':
+        new_status = request.POST.get('status')
+        
+        # Check for valid status
+        if new_status in ['pending', 'in_progress', 'completed']:
+            service_request.status = new_status
+            service_request.save()
+            messages.success(request, "Service request status updated successfully!")
+        else:
+            messages.error(request, "Invalid status selected.")
+
+    return redirect('customers:mechanic-service')

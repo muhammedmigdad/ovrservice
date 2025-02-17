@@ -84,12 +84,11 @@ class ProductDetails(CommonModel):
     def __str__(self):
         return self.name
 
-class Review(CommonModel):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="reviews")
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    rating = models.PositiveSmallIntegerField()  # 1 to 5 stars
-    comment = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
+class Review(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True, null=True)
+    image = models.ImageField(upload_to='review', blank=True, null=True)
+    rating = models.FloatField(default=0)
 
     class Meta:
         db_table = 'customers_review'
@@ -98,8 +97,26 @@ class Review(CommonModel):
         ordering = ["-id"]
 
     def __str__(self):
-        return f"Review for {self.product.name} by {self.user.username}"
+        return self.name
 
+class CartItem(CommonModel):
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+    price = models.FloatField()  # Save the price at the time of adding to cart
+
+    class Meta:
+        db_table = 'cart_item'
+        verbose_name = 'cart item'
+        verbose_name_plural = 'cart items'
+        ordering = ('-id',)
+
+    def __str__(self):
+        return f"{self.product.name} (x{self.quantity})"
+
+    def total_price(self):
+        return self.price * self.quantity
+    
 
 
 class OrderItem(CommonModel):
@@ -156,3 +173,29 @@ class Order(CommonModel):
 
     def __str__(self):
         return self.order_id
+    
+    
+class Service(CommonModel):
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    image = models.ImageField(upload_to='services/')
+
+    def __str__(self):
+        return self.title
+
+class ServiceRequest(CommonModel):
+    name = models.CharField(max_length=255)
+    email = models.EmailField(blank=True, null=True)
+    phone = models.CharField(max_length=15)
+    service = models.ForeignKey(Service, on_delete=models.CASCADE)
+    details = models.TextField()
+    submitted_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'customers_service_request'
+        verbose_name = 'service_request'
+        verbose_name_plural = 'service_requests'
+        ordering = ["-id"]
+
+    def __str__(self):
+        return self.service.title
