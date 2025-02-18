@@ -1,44 +1,66 @@
-{% extends "base/customer-base.html" %} 
-
-{% block container %} 
-
+{% extends "base/customer-base.html" %}
+{% block container %}
 {% load static %}
-
 {% include 'includes/customer-header.html' %}
 
-<div class="container mx-auto px-4 py-6">
-    <h1 class="text-2xl font-bold mb-4">Service Requests</h1>
+<section class="home-bg">
+    <div class="container mx-auto px-4 rounded-lg py-6">
+        <h1 class="text-2xl font-bold text-white text-center mb-4">Service Requests</h1>
 
-    <table class="min-w-full bg-white border border-gray-300">
-        <thead>
-            <tr>
-                <th class="py-2 px-4 border">Name</th>
-                <th class="py-2 px-4 border">Service</th>
-                <th class="py-2 px-4 border">Phone</th>
-                <th class="py-2 px-4 border">Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for request in service_requests %}
-            <tr>
-                <td class="py-2 px-4 border">{{ request.name }}</td>
-                <td class="py-2 px-4 border">{{ request.service.title }}</td>
-                <td class="py-2 px-4 border">{{ request.phone }}</td>
-                <td class="py-2 px-4 border">
-                    <form method="post" action="">
-                        {% csrf_token %}
-                        <select name="status" class="border p-1 rounded">
-                            <option value="pending" {% if request.status == "pending" %}selected{% endif %}>Pending</option>
-                            <option value="in_progress" {% if request.status == "in_progress" %}selected{% endif %}>In Progress</option>
-                            <option value="completed" {% if request.status == "completed" %}selected{% endif %}>Completed</option>
-                        </select>
-                        <button type="submit" class="ml-2  bg-blue-500 text-white px-4 py-1 rounded">Update</button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
+        <!-- Responsive Table Container -->
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-white border border-gray-300">
+                <thead class="hidden sm:table-header-group">
+                    <tr>
+                        <th class="py-2 px-4 border">Name</th>
+                        <th class="py-2 px-4 border">Service</th>
+                        <th class="py-2 px-4 border">Phone</th>
+                        <th class="py-2 px-4 border">Status</th>
+                        <th class="py-2 px-4 border">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for request in service_requests %}
+                    <tr class="block sm:table-row border-b border-gray-300">
+                        <td class="block sm:table-cell py-2 px-4 border">
+                            <span class="font-bold sm:hidden">Name: </span>{{ request.name }}
+                        </td>
+                        <td class="block sm:table-cell py-2 px-4 border">
+                            <span class="font-bold sm:hidden">Service: </span>{{ request.service.title }}
+                        </td>
+                        <td class="block sm:table-cell py-2 px-4 border">
+                            <span class="font-bold sm:hidden">Phone: </span>{{ request.phone }}
+                        </td>
+                        <td class="block sm:table-cell py-2 px-4 border">
+                            <span class="font-bold sm:hidden">Status: </span>{{ request.status }}
+                        </td>
+                        <td class="block sm:table-cell py-2 px-4 border">
+                            <form method="post" action="{% url 'customers:update_status' request.id %}">
+                                {% csrf_token %}
+                                <select name="status" class="border p-1 rounded">
+                                    <option value="pending" {% if request.status == "pending" %}selected{% endif %}>Pending</option>
+                                    <option value="in_progress" {% if request.status == "in_progress" %}selected{% endif %}>In Progress</option>
+                                    <option value="completed" {% if request.status == "completed" %}selected{% endif %}>Completed</option>
+                                </select>
+                                <button type="submit" class="ml-2 bg-blue-500 text-white px-4 py-1 rounded">Update</button>
+                            </form>
+                            
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Display messages if available -->
+        {% if messages %}
+            <div class="alert mt-4">
+                {% for message in messages %}
+                    <p class="bg-blue-200 text-blue-800 p-2 rounded">{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+</section>
 
 {% endblock %}

@@ -3,12 +3,12 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib.auth.decorators import login_required
 from django.http.response import HttpResponseRedirect, HttpResponse
 from django.contrib import messages
+from django.db.models import Q, Sum
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from common.decorators import allow_manager
 from common.functions import generate_form_errors
 from users.models import User
-from django.db.models import Sum
 from providers.models import *
 from customers.models import *
 from spareparts.models import *
@@ -136,13 +136,16 @@ def index(request):
 
 
 @login_required(login_url='/login/')
-def store(request, id):
-    storecategory = StoreCategory.objects.all()
+def store(request, id=None):
     
+    storecategory = StoreCategory.objects.all()
+    stores = Store.objects.all()
+
+    # Filter stores based on search query
+    
+    # If id is provided, filter by that
     if id:
-        stores = Store.objects.filter(storecategory__id=id)
-    else:
-        stores = Store.objects.all()
+        stores = stores.filter(id=id)
     
     context = {
         'storecategory': storecategory,
@@ -150,6 +153,7 @@ def store(request, id):
     }
     
     return render(request, 'customer/store.html', context=context)
+
 
 
 @login_required(login_url='/login/')
@@ -210,6 +214,11 @@ def request_service(request):
     user = request.user
     services = Service.objects.all()
 
+    # Search functionality
+    query = request.GET.get('q')
+    if query:
+        services = services.filter(Q(title__icontains=query) | Q(description__icontains=query))
+
     if request.method == 'POST':
         name = request.POST.get('name')
         email = request.POST.get('email', '')
@@ -219,15 +228,14 @@ def request_service(request):
 
         if not name or not phone or not service_id or not details:
             messages.error(request, "All fields are required")
-            return redirect('customers:service')  # Redirect back with an error message
+            return redirect('customers:service')
 
         try:
             service = Service.objects.get(id=service_id)
         except Service.DoesNotExist:
             messages.error(request, "Invalid service selected")
-            return redirect('customers:service')  # Redirect back with an error message
+            return redirect('customers:service')
 
-        # Save the service request
         ServiceRequest.objects.create(
             name=name,
             email=email,
@@ -249,44 +257,61 @@ def request_service(request):
     context = {
         'cart_count': cart_count,
         'services': services,
+        'query': query,  # Send query back to the template for input persistence
     }
 
-    return render(request, 'customer/service.html', context=context)
-
+    return render(request, 'customer/service.html', context)
 @login_required(login_url='/login/')
 def mechanic_service(request):
     """View for mechanics to manage service requests"""
-    user = request.user
-    service_requests = ServiceRequest.objects.all().order_by('-created_datetime')  # Use 'created_datetime' instead of 'created_at'
+    service_requests = ServiceRequest.objects.all().order_by('-created_datetime')
 
     context = {
         'service_requests': service_requests,
     }
     return render(request, 'customer/mechanic-service.html', context)
 
-
 @login_required(login_url='/login/')
 def mechanic_service_request(request, request_id):
     """Allow mechanics to update service request status"""
     user = request.user
     
-    # Check if the user is a provider (mechanic)
+    # Ensure only provider users can update requests
     if not ProviderUser.objects.filter(user=user).exists():
         messages.error(request, "Unauthorized access! You must be a provider to update service requests.")
         return redirect('customers:mechanic_service')
 
-    # Get the service request
+    # Fetch the service request
     service_request = get_object_or_404(ServiceRequest, id=request_id)
 
     if request.method == 'POST':
         new_status = request.POST.get('status')
-        
-        # Check for valid status
+
+        # Validate and update status
         if new_status in ['pending', 'in_progress', 'completed']:
             service_request.status = new_status
-            service_request.save()
+            service_request.save(update_fields=['status'])
             messages.success(request, "Service request status updated successfully!")
         else:
             messages.error(request, "Invalid status selected.")
 
     return redirect('customers:mechanic-service')
+
+@login_required(login_url='/login/')
+def update_status(request, request_id):
+    # Fetch the service request by ID
+    service_request = get_object_or_404(ServiceRequest, id=request_id)
+
+    # Ensure the request method is POST
+    if request.method == 'POST':
+        new_status = request.POST.get('status')
+
+        # Validate and update the status
+        if new_status in ['pending', 'in_progress', 'completed']:
+            service_request.status = new_status
+            service_request.save(update_fields=['status'])
+            messages.success(request, "Status updated successfully!")
+        else:
+            messages.error(request, "Invalid status selected.")
+
+    return redirect('customers:mechanic-service')  # Ensure this matches your URL name

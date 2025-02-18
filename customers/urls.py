@@ -28,6 +28,7 @@ urlpatterns = [
     # path('reviews/', views.reviews_list, name='reviews_list'),
     path('mechanic-service/', views.mechanic_service, name='mechanic-service'),
     path('mechanic-service-requst/<int:request_id>/', views.mechanic_service_request, name='mechanic-service-requst'),
+    path('update_status/<int:request_id>/', views.update_status, name='update_status'),
     
     path("store/<int:id>/", views.store, name="store"),
 ]

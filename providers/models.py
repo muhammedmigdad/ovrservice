@@ -25,24 +25,29 @@ class ProviderService(CommonModel):
         return self.name
 
 class ProviderServiceRequest(CommonModel):
+    PENDING = 'pending'
+    IN_PROGRESS = 'in_progress'
+    COMPLETED = 'completed'
+
     STATUS_CHOICES = [
-        ('pending', 'Pending'),
-        ('in_progress', 'In Progress'),
-        ('completed', 'Completed'),
+        (PENDING, 'Pending'),
+        (IN_PROGRESS, 'In Progress'),
+        (COMPLETED, 'Completed'),
     ]
 
     name = models.CharField(max_length=255)
     email = models.EmailField(blank=True, null=True)
-    phone = models.CharField(max_length=20)
+    phone = models.CharField(max_length=15)
     service = models.ForeignKey(ProviderService, on_delete=models.CASCADE)
     provider_user = models.ForeignKey(ProviderUser, on_delete=models.CASCADE, related_name="service_requests")
     details = models.TextField()
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
-    created_at = models.DateTimeField(auto_now_add=True)
+    submitted_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default=PENDING
+    )
 
     def __str__(self):
-        return f'{self.name} - {self.service.name} ({self.status})'
-
-    
-    
+        return f"{self.name} - {self.status}"
     
