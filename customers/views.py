@@ -135,24 +135,7 @@ def index(request):
     return render(request, 'customer/index.html', context=context)
 
 
-@login_required(login_url='/login/')
-def store(request, id=None):
-    
-    storecategory = StoreCategory.objects.all()
-    stores = Store.objects.all()
 
-    # Filter stores based on search query
-    
-    # If id is provided, filter by that
-    if id:
-        stores = stores.filter(id=id)
-    
-    context = {
-        'storecategory': storecategory,
-        'stores': stores,
-    }
-    
-    return render(request, 'customer/store.html', context=context)
 
 
 
@@ -174,8 +157,31 @@ def notification(request):
     return render(request, 'customer/notification.html')
 
 @login_required(login_url='/login/')
-def products(request):
-    return render(request, 'customer/products.html')
+def products(request, id=None):
+    storecategories = StoreCategory.objects.all()
+    stores = Store.objects.all()
+    products = Product.objects.all()  # Fetch all products by default
+
+    # Store Filter Logic
+    if id:  
+        stores = stores.filter(id=id)
+        products = products.filter(store_id=id)
+
+    # Search Filter Logic
+    search_query = request.GET.get('q')
+    if search_query:
+        products = products.filter(name__icontains=search_query)  # Search by name
+
+    context = {
+        'storecategories': storecategories,
+        'stores': stores,
+        'products': products,
+        'search_query': search_query,  # Pass search query to template
+    }
+    
+    return render(request, 'customer/products.html', context)
+
+
 
 @login_required(login_url='/login/')
 def profile(request):

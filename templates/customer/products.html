@@ -6,344 +6,68 @@
 
 {% include 'includes/customer-header.html' %}
     
-    <section class=" bg-gray-900" >
-        <div class="flex justify-center pt-14 items-center">
-            <div class="flex items-center bg-gray-500 opacity-95 p-2 rounded-full shadow-md w-64">
-                <input 
-                  type="text" 
-                  placeholder="Search" 
-                  class="bg-transparent text-white placeholder-gray-400 outline-none w-full px-2"
-                />
-                <button class="text-white">
-                    <img src="{% static './images/search.png' %}" alt="images">
-                </button>
-              </div> 
+<section class="bg-gray-900">
+  <div class="flex justify-center pt-14 items-center">
+    <form method="GET" action="" class="flex items-center bg-gray-500 opacity-95 p-2 rounded-full shadow-md w-64">
+        <input 
+            type="text" 
+            name="q"
+            placeholder="Search Products..." 
+            value="{{ search_query|default:'' }}" 
+            class="bg-transparent text-white placeholder-gray-400 outline-none w-full px-2"
+        />
+        <button type="submit" class="text-white">
+            <img src="{% static 'images/search.png' %}" alt="Search">
+        </button>
+    </form> 
+</div>
+
+  
+  <!-- Store Categories Grid -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 pt-10">
+    {% for storecategory in storecategories %}
+        <div class="w-full bg-zinc-800 rounded-[14px] p-4">
+            <div>
+                <img src="{{ storecategory.image.url }}" alt="{{ storecategory.name }}" class="m-auto w-full rounded-md">
+            </div>
+            <div>
+                <h1 class="text-neutral-400 text-[18px] sm:text-[20px] mt-4">{{ storecategory.name }}</h1>
+                <p class="text-neutral-500 text-[12px] sm:text-[14px] mt-2">{{ storecategory.description }}</p>
+            </div>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-5 pt-24">
-            <!-- Product Card -->
-            <div class="w-full bg-zinc-800 rounded-[14px] p-4">
-              <div>
-                <img src="{% static './images/products2.png' %}" alt="Product Image" class="m-auto w-full rounded-md">
-              </div>
-              <div>
-                <h1 class="text-neutral-400 text-[18px] sm:text-[20px] mt-4">Lorem ipsum</h1>
+    {% empty %}
+        <p class="text-center text-white col-span-3">No store categories available.</p>
+    {% endfor %}
+</div>
+
+<!-- Products Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 pt-24">
+    {% for product in products %}
+        <div class="w-full bg-zinc-800 rounded-[14px] p-4">
+            <div>
+                <img src="{{ product.image.url }}" alt="Product Image" class="m-auto w-full rounded-md">
+            </div>
+            <div>
+                <h1 class="text-neutral-400 text-[18px] sm:text-[20px] mt-4">{{ product.name }}</h1>
                 <p class="text-neutral-500 text-[12px] sm:text-[14px] mt-2">
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consectetur ipsum ullam
+                    {{ product.description }}
                 </p>
                 <div class="flex items-center mt-4">
-                  <h3 class="text-neutral-500 mr-2 line-through">₹210</h3>
-                  <h3 class="text-white text-[18px] sm:text-[20px]">₹209</h3>
-                  <a href="{% url 'customers:product' %}" class="text-white px-4 py-1 bg-green-500 rounded-[3px] ml-auto hover:bg-green-600">
-                    Shop Now
-                  </a>
+                    <h3 class="text-neutral-500 mr-2 line-through">₹{{ product.regular_price }}</h3>
+                    <h3 class="text-white text-[18px] sm:text-[20px]">₹{{ product.sale_price }}</h3>
+                    <a href="{% url 'customers:product'  %}" 
+                       class="text-white px-4 py-1 bg-green-500 rounded-[3px] ml-auto hover:bg-green-600">
+                        Shop Now
+                    </a>
                 </div>
-              </div>
             </div>
-            <div class="w-full bg-zinc-800 rounded-[14px] p-4">
-                <div>
-                  <img src="{% static './images/products2.png' %}" alt="Product Image" class="m-auto w-full rounded-md">
-                </div>
-                <div>
-                  <h1 class="text-neutral-400 text-[18px] sm:text-[20px] mt-4">Lorem ipsum</h1>
-                  <p class="text-neutral-500 text-[12px] sm:text-[14px] mt-2">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consectetur ipsum ullam
-                  </p>
-                  <div class="flex items-center mt-4">
-                    <h3 class="text-neutral-500 mr-2 line-through">₹210</h3>
-                    <h3 class="text-white text-[18px] sm:text-[20px]">₹209</h3>
-                    <a href="{% url 'customers:product' %}" class="text-white px-4 py-1 bg-green-500 rounded-[3px] ml-auto hover:bg-green-600">
-                      Shop Now
-                    </a>
-                  </div>
-                </div>
-              </div>            <div class="w-full bg-zinc-800 rounded-[14px] p-4">
-                <div>
-                  <img src="{% static './images/products2.png' %}" alt="Product Image" class="m-auto w-full rounded-md">
-                </div>
-                <div>
-                  <h1 class="text-neutral-400 text-[18px] sm:text-[20px] mt-4">Lorem ipsum</h1>
-                  <p class="text-neutral-500 text-[12px] sm:text-[14px] mt-2">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consectetur ipsum ullam
-                  </p>
-                  <div class="flex items-center mt-4">
-                    <h3 class="text-neutral-500 mr-2 line-through">₹210</h3>
-                    <h3 class="text-white text-[18px] sm:text-[20px]">₹209</h3>
-                    <a href="{% url 'customers:product' %}" class="text-white px-4 py-1 bg-green-500 rounded-[3px] ml-auto hover:bg-green-600">
-                      Shop Now
-                    </a>
-                  </div>
-                </div>
-              </div>            <div class="w-full bg-zinc-800 rounded-[14px] p-4">
-                <div>
-                  <img src="{% static './images/products2.png' %}" alt="Product Image" class="m-auto w-full rounded-md">
-                </div>
-                <div>
-                  <h1 class="text-neutral-400 text-[18px] sm:text-[20px] mt-4">Lorem ipsum</h1>
-                  <p class="text-neutral-500 text-[12px] sm:text-[14px] mt-2">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consectetur ipsum ullam
-                  </p>
-                  <div class="flex items-center mt-4">
-                    <h3 class="text-neutral-500 mr-2 line-through">₹210</h3>
-                    <h3 class="text-white text-[18px] sm:text-[20px]">₹209</h3>
-                    <a href="{% url 'customers:product' %}" class="text-white px-4 py-1 bg-green-500 rounded-[3px] ml-auto hover:bg-green-600">
-                      Shop Now
-                    </a>
-                  </div>
-                </div>
-              </div>            <div class="w-full bg-zinc-800 rounded-[14px] p-4">
-                <div>
-                  <img src="{% static './images/products2.png' %}" alt="Product Image" class="m-auto w-full rounded-md">
-                </div>
-                <div>
-                  <h1 class="text-neutral-400 text-[18px] sm:text-[20px] mt-4">Lorem ipsum</h1>
-                  <p class="text-neutral-500 text-[12px] sm:text-[14px] mt-2">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consectetur ipsum ullam
-                  </p>
-                  <div class="flex items-center mt-4">
-                    <h3 class="text-neutral-500 mr-2 line-through">₹210</h3>
-                    <h3 class="text-white text-[18px] sm:text-[20px]">₹209</h3>
-                    <a href="{% url 'customers:product' %}" class="text-white px-4 py-1 bg-green-500 rounded-[3px] ml-auto hover:bg-green-600">
-                      Shop Now
-                    </a>
-                  </div>
-                </div>
-              </div>            <div class="w-full bg-zinc-800 rounded-[14px] p-4">
-                <div>
-                  <img src="{% static './images/products2.png' %}" alt="Product Image" class="m-auto w-full rounded-md">
-                </div>
-                <div>
-                  <h1 class="text-neutral-400 text-[18px] sm:text-[20px] mt-4">Lorem ipsum</h1>
-                  <p class="text-neutral-500 text-[12px] sm:text-[14px] mt-2">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consectetur ipsum ullam
-                  </p>
-                  <div class="flex items-center mt-4">
-                    <h3 class="text-neutral-500 mr-2 line-through">₹210</h3>
-                    <h3 class="text-white text-[18px] sm:text-[20px]">₹209</h3>
-                    <a href="{% url 'customers:product' %}" class="text-white px-4 py-1 bg-green-500 rounded-[3px] ml-auto hover:bg-green-600">
-                      Shop Now
-                    </a>
-                  </div>
-                </div>
-              </div>
-          </div>
-          <div class="grid grid-cols-1  sm:grid-cols-2 lg:grid-cols-6 gap-5 mt-24">
-            <!-- Product Card -->
-            <div class="w-full bg-zinc-800 rounded-[14px] p-4">
-              <div>
-                <img src="{% static './images/products3.png' %}" alt="Product Image" class="m-auto w-full rounded-md">
-              </div>
-              <div>
-                <h1 class="text-neutral-400 text-[18px] sm:text-[20px] mt-4">Lorem ipsum</h1>
-                <p class="text-neutral-500 text-[12px] sm:text-[14px] mt-2">
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consectetur ipsum ullam
-                </p>
-                <div class="flex items-center mt-4">
-                  <h3 class="text-neutral-500 mr-2 line-through">₹210</h3>
-                  <h3 class="text-white text-[18px] sm:text-[20px]">₹209</h3>
-                  <a href="{% url 'customers:product' %}" class="text-white px-4 py-1 bg-green-500 rounded-[3px] ml-auto hover:bg-green-600">
-                    Shop Now
-                  </a>
-                </div>
-              </div>
-            </div>
-            <div class="w-full bg-zinc-800 rounded-[14px] p-4">
-                <div>
-                  <img src="{% static './images/products3.png' %}" alt="Product Image" class="m-auto w-full rounded-md">
-                </div>
-                <div>
-                  <h1 class="text-neutral-400 text-[18px] sm:text-[20px] mt-4">Lorem ipsum</h1>
-                  <p class="text-neutral-500 text-[12px] sm:text-[14px] mt-2">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consectetur ipsum ullam
-                  </p>
-                  <div class="flex items-center mt-4">
-                    <h3 class="text-neutral-500 mr-2 line-through">₹210</h3>
-                    <h3 class="text-white text-[18px] sm:text-[20px]">₹209</h3>
-                    <a href="{% url 'customers:product' %}" class="text-white px-4 py-1 bg-green-500 rounded-[3px] ml-auto hover:bg-green-600">
-                      Shop Now
-                    </a>
-                  </div>
-                </div>
-              </div>            <div class="w-full bg-zinc-800 rounded-[14px] p-4">
-                <div>
-                  <img src="{% static './images/products3.png' %}" alt="Product Image" class="m-auto w-full rounded-md">
-                </div>
-                <div>
-                  <h1 class="text-neutral-400 text-[18px] sm:text-[20px] mt-4">Lorem ipsum</h1>
-                  <p class="text-neutral-500 text-[12px] sm:text-[14px] mt-2">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consectetur ipsum ullam
-                  </p>
-                  <div class="flex items-center mt-4">
-                    <h3 class="text-neutral-500 mr-2 line-through">₹210</h3>
-                    <h3 class="text-white text-[18px] sm:text-[20px]">₹209</h3>
-                    <a href="{% url 'customers:product' %}" class="text-white px-4 py-1 bg-green-500 rounded-[3px] ml-auto hover:bg-green-600">
-                      Shop Now
-                    </a>
-                  </div>
-                </div>
-              </div>            <div class="w-full bg-zinc-800 rounded-[14px] p-4">
-                <div>
-                  <img src="{% static './images/products3.png' %}" alt="Product Image" class="m-auto w-full rounded-md">
-                </div>
-                <div>
-                  <h1 class="text-neutral-400 text-[18px] sm:text-[20px] mt-4">Lorem ipsum</h1>
-                  <p class="text-neutral-500 text-[12px] sm:text-[14px] mt-2">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consectetur ipsum ullam
-                  </p>
-                  <div class="flex items-center mt-4">
-                    <h3 class="text-neutral-500 mr-2 line-through">₹210</h3>
-                    <h3 class="text-white text-[18px] sm:text-[20px]">₹209</h3>
-                    <a href="{% url 'customers:product' %}" class="text-white px-4 py-1 bg-green-500 rounded-[3px] ml-auto hover:bg-green-600">
-                      Shop Now
-                    </a>
-                  </div>
-                </div>
-              </div>            <div class="w-full bg-zinc-800 rounded-[14px] p-4">
-                <div>
-                  <img src="{% static './images/products3.png' %}" alt="Product Image" class="m-auto w-full rounded-md">
-                </div>
-                <div>
-                  <h1 class="text-neutral-400 text-[18px] sm:text-[20px] mt-4">Lorem ipsum</h1>
-                  <p class="text-neutral-500 text-[12px] sm:text-[14px] mt-2">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consectetur ipsum ullam
-                  </p>
-                  <div class="flex items-center mt-4">
-                    <h3 class="text-neutral-500 mr-2 line-through">₹210</h3>
-                    <h3 class="text-white text-[18px] sm:text-[20px]">₹209</h3>
-                    <a href="{% url 'customers:product' %}" class="text-white px-4 py-1 bg-green-500 rounded-[3px] ml-auto hover:bg-green-600">
-                      Shop Now
-                    </a>
-                  </div>
-                </div>
-              </div>            <div class="w-full bg-zinc-800 rounded-[14px] p-4">
-                <div>
-                  <img src="{% static './images/products3.png' %}" alt="Product Image" class="m-auto w-full rounded-md">
-                </div>
-                <div>
-                  <h1 class="text-neutral-400 text-[18px] sm:text-[20px] mt-4">Lorem ipsum</h1>
-                  <p class="text-neutral-500 text-[12px] sm:text-[14px] mt-2">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consectetur ipsum ullam
-                  </p>
-                  <div class="flex items-center mt-4">
-                    <h3 class="text-neutral-500 mr-2 line-through">₹210</h3>
-                    <h3 class="text-white text-[18px] sm:text-[20px]">₹209</h3>
-                    <a href="{% url 'customers:product' %}" class="text-white px-4 py-1 bg-green-500 rounded-[3px] ml-auto hover:bg-green-600">
-                      Shop Now
-                    </a>
-                  </div>
-                </div>
-              </div>
-          </div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 pb-10 lg:grid-cols-6 gap-5 mt-24">
-            <!-- Product Card -->
-            <div class="w-full bg-zinc-800 rounded-[14px] p-4">
-              <div>
-                <img src="{% static './images/products1.png' %}" alt="Product Image" class="m-auto w-full rounded-md">
-              </div>
-              <div>
-                <h1 class="text-neutral-400 text-[18px] sm:text-[20px] mt-4">Lorem ipsum</h1>
-                <p class="text-neutral-500 text-[12px] sm:text-[14px] mt-2">
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consectetur ipsum ullam
-                </p>
-                <div class="flex items-center mt-4">
-                  <h3 class="text-neutral-500 mr-2 line-through">₹210</h3>
-                  <h3 class="text-white text-[18px] sm:text-[20px]">₹209</h3>
-                  <a href="{% url 'customers:product' %}" class="text-white px-4 py-1 bg-green-500 rounded-[3px] ml-auto hover:bg-green-600">
-                    Shop Now
-                  </a>
-                </div>
-              </div>
-            </div>
-            <div class="w-full bg-zinc-800 rounded-[14px] p-4">
-                <div>
-                  <img src="{% static './images/products1.png' %}" alt="Product Image" class="m-auto w-full rounded-md">
-                </div>
-                <div>
-                  <h1 class="text-neutral-400 text-[18px] sm:text-[20px] mt-4">Lorem ipsum</h1>
-                  <p class="text-neutral-500 text-[12px] sm:text-[14px] mt-2">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consectetur ipsum ullam
-                  </p>
-                  <div class="flex items-center mt-4">
-                    <h3 class="text-neutral-500 mr-2 line-through">₹210</h3>
-                    <h3 class="text-white text-[18px] sm:text-[20px]">₹209</h3>
-                    <a href="{% url 'customers:product' %}" class="text-white px-4 py-1 bg-green-500 rounded-[3px] ml-auto hover:bg-green-600">
-                      Shop Now
-                    </a>
-                  </div>
-                </div>
-              </div>            <div class="w-full bg-zinc-800 rounded-[14px] p-4">
-                <div>
-                  <img src="{% static './images/products1.png' %}" alt="Product Image" class="m-auto w-full rounded-md">
-                </div>
-                <div>
-                  <h1 class="text-neutral-400 text-[18px] sm:text-[20px] mt-4">Lorem ipsum</h1>
-                  <p class="text-neutral-500 text-[12px] sm:text-[14px] mt-2">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consectetur ipsum ullam
-                  </p>
-                  <div class="flex items-center mt-4">
-                    <h3 class="text-neutral-500 mr-2 line-through">₹210</h3>
-                    <h3 class="text-white text-[18px] sm:text-[20px]">₹209</h3>
-                    <a href="{% url 'customers:product' %}" class="text-white px-4 py-1 bg-green-500 rounded-[3px] ml-auto hover:bg-green-600">
-                      Shop Now
-                    </a>
-                  </div>
-                </div>
-              </div>            <div class="w-full bg-zinc-800 rounded-[14px] p-4">
-                <div>
-                  <img src="{% static './images/products1.png' %}" alt="Product Image" class="m-auto w-full rounded-md">
-                </div>
-                <div>
-                  <h1 class="text-neutral-400 text-[18px] sm:text-[20px] mt-4">Lorem ipsum</h1>
-                  <p class="text-neutral-500 text-[12px] sm:text-[14px] mt-2">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consectetur ipsum ullam
-                  </p>
-                  <div class="flex items-center mt-4">
-                    <h3 class="text-neutral-500 mr-2 line-through">₹210</h3>
-                    <h3 class="text-white text-[18px] sm:text-[20px]">₹209</h3>
-                    <a href="{% url 'customers:product' %}" class="text-white px-4 py-1 bg-green-500 rounded-[3px] ml-auto hover:bg-green-600">
-                      Shop Now
-                    </a>
-                  </div>
-                </div>
-              </div>            <div class="w-full bg-zinc-800 rounded-[14px] p-4">
-                <div>
-                  <img src="{% static './images/products1.png' %}" alt="Product Image" class="m-auto w-full rounded-md">
-                </div>
-                <div>
-                  <h1 class="text-neutral-400 text-[18px] sm:text-[20px] mt-4">Lorem ipsum</h1>
-                  <p class="text-neutral-500 text-[12px] sm:text-[14px] mt-2">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consectetur ipsum ullam
-                  </p>
-                  <div class="flex items-center mt-4">
-                    <h3 class="text-neutral-500 mr-2 line-through">₹210</h3>
-                    <h3 class="text-white text-[18px] sm:text-[20px]">₹209</h3>
-                    <a href="{% url 'customers:product' %}" class="text-white px-4 py-1 bg-green-500 rounded-[3px] ml-auto hover:bg-green-600">
-                      Shop Now
-                    </a>
-                  </div>
-                </div>
-              </div>            <div class="w-full bg-zinc-800 rounded-[14px] p-4">
-                <div>
-                  <img src="{% static './images/products1.png' %}" alt="Product Image" class="m-auto w-full rounded-md">
-                </div>
-                <div>
-                  <h1 class="text-neutral-400 text-[18px] sm:text-[20px] mt-4">Lorem ipsum</h1>
-                  <p class="text-neutral-500 text-[12px] sm:text-[14px] mt-2">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consectetur ipsum ullam
-                  </p>
-                  <div class="flex items-center mt-4">
-                    <h3 class="text-neutral-500 mr-2 line-through">₹210</h3>
-                    <h3 class="text-white text-[18px] sm:text-[20px]">₹209</h3>
-                    <a href="{% url 'customers:product' %}" class="text-white px-4 py-1 bg-green-500 rounded-[3px] ml-auto hover:bg-green-600">
-                      Shop Now
-                    </a>
-                  </div>
-                </div>
-              </div>
-          </div>
-          
-          
-          
-    </section>
-    
+        </div>
+    {% empty %}
+        <p class="text-center text-white col-span-4">No products available.</p>
+    {% endfor %}
+</div>
+ndfor %}
+  </div>
+</section>
     {% include 'includes/customer-footer.html' %}
     {% endblock %}

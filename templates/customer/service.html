@@ -77,8 +77,8 @@
             {% for service in services %}
             <div class="p-6 border border-gray-600 rounded-xl shadow-md bg-black">
                 <img src="{{ service.image.url }}" alt="{{ service.title }}" class="w-full rounded-lg mb-4">
-                <h3 class="text-xl font-semibold mb-2 text-[#A41E11]">{{ service.title }}</h3>
-                <p class="text-gray-300 mb-4">{{ service.description }}</p>
+                <h3 class="text-xl font-semibold mb-2 text-[#ffffff]">{{ service.title }}</h3>
+                <p class="text-gray-400 mb-4">{{ service.description }}</p>
                 <button class="text-[#A41E11] font-semibold open-modal-btn" data-service-id="{{ service.id }}" data-service-title="{{ service.title }}">
                     Request Service &darr;
                 </button>
@@ -95,19 +95,19 @@
         <form id="request-service-form" method="POST" action="">
             {% csrf_token %}
             <div class="mb-4">
-                <label for="name" class="block font-semibold mb-1 text-[#A41E11]">Your Name</label>
+                <label for="name" class="block font-semibold mb-1 text-[#fff]">Your Name</label>
                 <input type="text" id="name" name="name" required class="w-full p-2 border border-gray-600 bg-black text-white rounded-lg" placeholder="Enter your name">
             </div>
             <div class="mb-4">
-                <label for="email" class="block font-semibold mb-1 text-[#A41E11]">Your Email</label>
+                <label for="email" class="block font-semibold mb-1 text-[#fff]">Your Email</label>
                 <input type="email" id="email" name="email" class="w-full p-2 border border-gray-600 bg-black text-white rounded-lg" placeholder="Enter your email">
             </div>
             <div class="mb-4">
-                <label for="phone" class="block font-semibold mb-1 text-[#A41E11]">Your Phone</label>
+                <label for="phone" class="block font-semibold mb-1 text-[#fff]">Your Phone</label>
                 <input type="text" id="phone" name="phone" required class="w-full p-2 border border-gray-600 bg-black text-white rounded-lg" placeholder="Enter your phone number">
             </div>
             <div class="mb-4">
-                <label for="service" class="block font-semibold mb-1 text-[#A41E11]">Select a Service</label>
+                <label for="service" class="block font-semibold mb-1 text-[#fff]">Select a Service</label>
                 <select id="service" name="service" required class="w-full p-2 border border-gray-600 bg-black text-white rounded-lg">
                     <option value="" disabled selected>Select a service</option>
                     {% for service in services %}
@@ -116,7 +116,7 @@
                 </select>
             </div>
             <div class="mb-4">
-                <label for="details" class="block font-semibold mb-1 text-[#A41E11]">Details</label>
+                <label for="details" class="block font-semibold mb-1 text-[#fff]">Details</label>
                 <textarea id="details" name="details" required class="w-full p-2 border border-gray-600 bg-black text-white rounded-lg" placeholder="Provide details about your request"></textarea>
             </div>
             <button type="submit" class="w-full bg-[#A41E11] text-white py-2 rounded-lg font-semibold">Submit Request</button>

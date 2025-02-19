@@ -78,7 +78,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-10">
                 {% for store in store %}
                     <div class="bg-[#252424] px-5 py-4 rounded-xl">
-                        <a href="{% url 'customers:store' id=store.id %}">
+                        <a href="{% url 'customers:products' id=store.id %}">
                             <img class="w-full" src="{{ store.image.url }}" alt="{{ store.name }}">
                             <h1 class="text-[20px] font-medium mt-7 text-white">{{ store.name }}</h1>
                         </a>

@@ -50,12 +50,17 @@ class StoreCategory(CommonModel):
     def __str__(self):
         return self.store.name
 
+
+    
 class Product(CommonModel):
     name = models.CharField(max_length=100)
+    image = models.ImageField(upload_to='review', blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     regular_price = models.FloatField()
     sale_price = models.FloatField(blank=True, null=True)
     store = models.ForeignKey(Store, on_delete=models.CASCADE)
+    created_on = models.DateTimeField(auto_now_add=True)
+    
 
     class Meta:
         db_table = 'items_product'
@@ -68,10 +73,12 @@ class Product(CommonModel):
 
 class ProductDetails(CommonModel):
     name = models.CharField(max_length=100)
+    image = models.ImageField(upload_to='review', blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     regular_price = models.FloatField()
     sale_price = models.FloatField(blank=True, null=True)
     store = models.ForeignKey(Store, on_delete=models.CASCADE)
+    products = models.ForeignKey(Product, on_delete=models.CASCADE)
     rating = models.FloatField(default=0)
     stock = models.IntegerField(default=0, blank=True, null=True)
 

@@ -20,8 +20,7 @@ urlpatterns = [
     
     path("contact/", views.contact, name="contact"),
     path("notification/", views.notification, name="notification"),
-    
-    path("products/", views.products, name="products"),
+    path('products/<int:id>/', views.products, name='products'),
     path("product/", views.product, name="product"),
     
     path('service/', views.request_service, name='service'),
@@ -30,5 +29,4 @@ urlpatterns = [
     path('mechanic-service-requst/<int:request_id>/', views.mechanic_service_request, name='mechanic-service-requst'),
     path('update_status/<int:request_id>/', views.update_status, name='update_status'),
     
-    path("store/<int:id>/", views.store, name="store"),
 ]
