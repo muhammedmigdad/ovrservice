@@ -6,68 +6,55 @@
 
 {% include 'includes/customer-header.html' %}
     
-<section class="bg-gray-900">
-  <div class="flex justify-center pt-14 items-center">
-    <form method="GET" action="" class="flex items-center bg-gray-500 opacity-95 p-2 rounded-full shadow-md w-64">
-        <input 
-            type="text" 
-            name="q"
-            placeholder="Search Products..." 
-            value="{{ search_query|default:'' }}" 
-            class="bg-transparent text-white placeholder-gray-400 outline-none w-full px-2"
-        />
-        <button type="submit" class="text-white">
-            <img src="{% static 'images/search.png' %}" alt="Search">
-        </button>
-    </form> 
-</div>
-
-  
-  <!-- Store Categories Grid -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 pt-10">
-    {% for storecategory in storecategories %}
-        <div class="w-full bg-zinc-800 rounded-[14px] p-4">
-            <div>
-                <img src="{{ storecategory.image.url }}" alt="{{ storecategory.name }}" class="m-auto w-full rounded-md">
-            </div>
-            <div>
-                <h1 class="text-neutral-400 text-[18px] sm:text-[20px] mt-4">{{ storecategory.name }}</h1>
-                <p class="text-neutral-500 text-[12px] sm:text-[14px] mt-2">{{ storecategory.description }}</p>
-            </div>
+<section class="home-bg2">
+    <div class="p-6 md:p-12 lg:p-[100px]">
+        <div class="flex justify-center pt-14 items-center">
+            <form method="GET" action="" class="flex items-center bg-gray-700 opacity-90 p-2 rounded-full shadow-lg w-72">
+                <input 
+                    type="text" 
+                    name="q"
+                    placeholder="Search Products..." 
+                    value="{{ search_query|default:'' }}" 
+                    class="bg-gray-800 text-white placeholder-gray-300 outline-none w-full px-3 py-1 rounded-l-full focus:ring-2 focus:ring-blue-400"
+                />
+                <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-r-full transition">
+                    <img src="{% static 'images/search.png' %}" alt="Search" class="w-5 h-5">
+                </button>
+            </form> 
         </div>
-    {% empty %}
-        <p class="text-center text-white col-span-3">No store categories available.</p>
-    {% endfor %}
-</div>
-
-<!-- Products Grid -->
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 pt-24">
-    {% for product in products %}
-        <div class="w-full bg-zinc-800 rounded-[14px] p-4">
-            <div>
-                <img src="{{ product.image.url }}" alt="Product Image" class="m-auto w-full rounded-md">
-            </div>
-            <div>
-                <h1 class="text-neutral-400 text-[18px] sm:text-[20px] mt-4">{{ product.name }}</h1>
-                <p class="text-neutral-500 text-[12px] sm:text-[14px] mt-2">
-                    {{ product.description }}
-                </p>
-                <div class="flex items-center mt-4">
-                    <h3 class="text-neutral-500 mr-2 line-through">₹{{ product.regular_price }}</h3>
-                    <h3 class="text-white text-[18px] sm:text-[20px]">₹{{ product.sale_price }}</h3>
-                    <a href="{% url 'customers:product'  %}" 
-                       class="text-white px-4 py-1 bg-green-500 rounded-[3px] ml-auto hover:bg-green-600">
-                        Shop Now
-                    </a>
+        
+      
+    
+    <!-- Products Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 pt-24">
+        {% for product in products %}
+            <div class="w-full bg-zinc-800 rounded-[14px] p-4">
+                <div>
+                    <img src="{{ product.image.url }}" alt="Product Image" class="m-auto w-full rounded-md">
+                </div>
+                <div>
+                    <h1 class="text-neutral-300 text-lg sm:text-xl md:text-2xl mt-4">{{ product.name }}</h1>
+                    <p class="text-neutral-400 text-sm sm:text-base md:text-lg mt-2">
+                        {{ product.description }}
+                    </p>
+                    <div class="flex items-center mt-4">
+                        <h3 class="text-neutral-500 text-sm sm:text-base md:text-lg mr-2 line-through">
+                            ₹{{ product.regular_price }}
+                        </h3>
+                        <h3 class="text-white text-base ml-3 sm:text-lg md:text-2xl">₹{{ product.sale_price }}</h3>
+                        <a href="{% url 'customers:product_detail' product.id %}" 
+                           class="text-white px-4 py-1 text-sm sm:text-base bg-green-500 rounded-[3px] ml-auto hover:bg-green-600">
+                            Shop Now
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
-    {% empty %}
-        <p class="text-center text-white col-span-4">No products available.</p>
-    {% endfor %}
-</div>
-ndfor %}
-  </div>
+        {% empty %}
+            <p class="text-center text-red-500 font-medium col-span-4 text-lg sm:text-xl">No products available.</p>
+        {% endfor %}
+    </div>
+    
+    </div>
 </section>
-    {% include 'includes/customer-footer.html' %}
-    {% endblock %}
+{% include 'includes/customer-footer.html' %}
+{% endblock %}

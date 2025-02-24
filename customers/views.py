@@ -51,7 +51,7 @@ def signup(request):
         if user_type == "client":
             return redirect("customers:login")
         else:
-            return redirect("customers:mechanic-login")  # Redirect mechanics to login
+            return redirect("providers:mechanic-login")  # Redirect providers to login
 
     return render(request, "customer/signup.html")
 
@@ -89,23 +89,19 @@ def mechanic_login(request):
 
         if not email or not password:
             messages.error(request, "Both email and password are required.")
-            return redirect("customers:mechanic-login")
+            return redirect("providers:mechanic-login")
 
-        try:
-            user = User.objects.get(email=email)
-            user = authenticate(request, username=user.email, password=password)
-        except User.DoesNotExist:
-            user = None
+        user = authenticate(request, email=email, password=password)  # Authenticate using email
 
-        if user is not None and user.is_provider:  # Ensure only mechanics can login here
+        if user is not None and user.is_provider:  # Ensure only providers can log in
             login(request, user)
             messages.success(request, "Mechanic login successful!")
-            return redirect("customers:index")  # Redirect to mechanic dashboard
+            return redirect("providers:dashboard")  # Ensure correct redirection
         else:
             messages.error(request, "Invalid credentials or not authorized as a mechanic.")
-            return redirect("customers:mechanic-login")
+            return redirect("providers:mechanic-login")
 
-    return render(request, "customer/mechanic-login.html")
+    return render(request, "provider/mechanic-login.html")
 
 @login_required(login_url='/login/')
 def user_logout(request):
@@ -115,6 +111,11 @@ def user_logout(request):
 def otp(request):
     return render(request, 'customer/otp.html')
 
+
+@login_required(login_url='/login/')
+def mechanic_dashboard(request):
+    
+    return render(request, 'mechanic/dashbord.html')
 
 @login_required(login_url='/login/')
 def index(request):
@@ -156,27 +157,24 @@ def contact(request):
 def notification(request):
     return render(request, 'customer/notification.html')
 
-@login_required(login_url='/login/')
 def products(request, id=None):
-    storecategories = StoreCategory.objects.all()
+    storecategories = StoreCategory.objects.select_related('store').all()  # Ensures store details are fetched
     stores = Store.objects.all()
-    products = Product.objects.all()  # Fetch all products by default
+    products = Product.objects.all()  
 
-    # Store Filter Logic
     if id:  
         stores = stores.filter(id=id)
         products = products.filter(store_id=id)
 
-    # Search Filter Logic
     search_query = request.GET.get('q')
     if search_query:
-        products = products.filter(name__icontains=search_query)  # Search by name
+        products = products.filter(name__icontains=search_query)
 
     context = {
         'storecategories': storecategories,
         'stores': stores,
         'products': products,
-        'search_query': search_query,  # Pass search query to template
+        'search_query': search_query,
     }
     
     return render(request, 'customer/products.html', context)
@@ -184,16 +182,97 @@ def products(request, id=None):
 
 
 @login_required(login_url='/login/')
+def store(request, category_id=None):
+    storecategories = StoreCategory.objects.all()
+    products = Product.objects.all()  # Fetch all products by default
+
+    # Filter products by store category if a category_id is provided
+    if category_id:
+        products = products.filter(store__storecategory__id=category_id)
+
+    # Search Filter Logic
+    search_query = request.GET.get('q')
+    if search_query:
+        products = products.filter(name__icontains=search_query)  # Search by product name
+
+    context = {
+        'storecategories': storecategories,
+        'products': products,
+        'search_query': search_query,  # Pass search query to template
+    }
+    
+    return render(request, 'customer/products.html', context=context)
+
+
+@login_required(login_url='/login/')
 def profile(request):
     return render(request, 'customer/profile.html')
 
 @login_required(login_url='/login/')
-def product(request):
-    return render(request, 'customer/product.html')
+def product_detail(request, product_id):
+    user = request.user
+    """Show a single product page when clicked."""
+    product = get_object_or_404(Product, id=product_id)
+    customer = get_object_or_404(Customer, user=user)
+
+    # Default quantity is 1
+    quantity = int(request.GET.get('quantity', 1))
+
+    # Get product price (sale price if available, else regular price)
+    product_price = product.sale_price if product.sale_price else product.regular_price
+
+    # Calculate item total and tax
+    item_total = product_price * quantity
+    tax_charge = item_total * 0.10  # 10% tax  
+    total = item_total + tax_charge
+
+    # Update or create CartTotal
+    cart_total, created = CartTotal.objects.get_or_create(customer=customer)
+    cart_total.item_total = item_total
+    cart_total.tax_charge = tax_charge
+    cart_total.total = total
+    cart_total.save() 
+
+    # Render the invoice template with updated cart bill
+    context = {
+        'cart_total': cart_total,
+        'product': product,
+        'quantity': quantity,
+    }
+    return render(request, 'customer/product.html', context)
 
 
+# @login_required(login_url='/login/')
+# def product_detail(request, product_id):
+#     user = request.user
+#     product = get_object_or_404(Product, id=product_id)
+#     customer = get_object_or_404(Customer, user=user)
 
+#     # Default quantity is 1
+#     quantity = int(request.GET.get('quantity', 1))
 
+#     # Get product price (sale price if available, else regular price)
+#     product_price = product.sale_price if product.sale_price else product.regular_price
+
+#     # Calculate item total and tax
+#     item_total = product_price * quantity
+#     tax_charge = item_total * 0.10  # 10% tax
+#     total = item_total + tax_charge
+
+#     # Update or create CartTotal
+#     cart_total, created = CartTotal.objects.get_or_create(customer=customer)
+#     cart_total.item_total = item_total
+#     cart_total.tax_charge = tax_charge
+#     cart_total.total = total
+#     cart_total.save() 
+
+#     # Render the invoice template with updated cart bill
+#     context = {
+#         'cart_total': cart_total,
+#         'product': product,
+#         'quantity': quantity,
+#     }
+#     return render(request, 'customer/product.html', context)
 
 
 # def reviews_list(request):
@@ -275,7 +354,7 @@ def mechanic_service(request):
     context = {
         'service_requests': service_requests,
     }
-    return render(request, 'customer/mechanic-service.html', context)
+    return render(request, 'mechanic/mechanic-service.html', context)
 
 @login_required(login_url='/login/')
 def mechanic_service_request(request, request_id):
@@ -285,7 +364,7 @@ def mechanic_service_request(request, request_id):
     # Ensure only provider users can update requests
     if not ProviderUser.objects.filter(user=user).exists():
         messages.error(request, "Unauthorized access! You must be a provider to update service requests.")
-        return redirect('customers:mechanic_service')
+        return redirect('mechanics:mechanic_service')
 
     # Fetch the service request
     service_request = get_object_or_404(ServiceRequest, id=request_id)
@@ -301,7 +380,7 @@ def mechanic_service_request(request, request_id):
         else:
             messages.error(request, "Invalid status selected.")
 
-    return redirect('customers:mechanic-service')
+    return redirect('mechanics:mechanic-service')
 
 @login_required(login_url='/login/')
 def update_status(request, request_id):
@@ -320,4 +399,4 @@ def update_status(request, request_id):
         else:
             messages.error(request, "Invalid status selected.")
 
-    return redirect('customers:mechanic-service')  # Ensure this matches your URL name
+    return redirect('mechanics:mechanic-service')  # Ensure this matches your URL name
