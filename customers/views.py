@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404, render, reverse, redirect
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout, get_user_model
 from django.contrib.auth.decorators import login_required
-from django.http.response import HttpResponseRedirect, HttpResponse
+from django.http.response import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.contrib import messages
 from django.db.models import Q, Sum
 from django.contrib.auth import authenticate, login
@@ -140,14 +140,11 @@ def index(request):
 
 
 
-@login_required(login_url='/login/')
-def checkout(request):
-    return render(request, 'customer/checkout.html')
 
 
 @login_required(login_url='/login/')
-def client_bill(request):
-    return render(request, 'customer/client-bill.html')
+def client_account(request):
+    return render(request, 'customer/client-account.html')
 
 
 @login_required(login_url='/login/')
@@ -210,69 +207,216 @@ def profile(request):
 
 @login_required(login_url='/login/')
 def product_detail(request, product_id):
+    """
+    Displays product details and cart totals.
+    """
     user = request.user
-    """Show a single product page when clicked."""
+    customer, _ = Customer.objects.get_or_create(user=user)
     product = get_object_or_404(Product, id=product_id)
-    customer = get_object_or_404(Customer, user=user)
 
-    # Default quantity is 1
-    quantity = int(request.GET.get('quantity', 1))
+    # Fetch cart items for the customer
+    cart_items = CartItem.objects.filter(customer=customer)
 
-    # Get product price (sale price if available, else regular price)
-    product_price = product.sale_price if product.sale_price else product.regular_price
+    # Update cart totals
+    update_cart_total(customer)
 
-    # Calculate item total and tax
-    item_total = product_price * quantity
-    tax_charge = item_total * 0.10  # 10% tax  
-    total = item_total + tax_charge
+    # Fetch the updated cart total
+    cart_total = CartTotal.objects.get(customer=customer)
 
-    # Update or create CartTotal
-    cart_total, created = CartTotal.objects.get_or_create(customer=customer)
-    cart_total.item_total = item_total
-    cart_total.tax_charge = tax_charge
-    cart_total.total = total
-    cart_total.save() 
-
-    # Render the invoice template with updated cart bill
+    # Prepare context for the template
     context = {
         'cart_total': cart_total,
+        'cart_items': cart_items,
         'product': product,
-        'quantity': quantity,
     }
     return render(request, 'customer/product.html', context)
+def update_cart_total(customer):
+    cart_items = CartItem.objects.filter(customer=customer)
+
+    # Calculate item total based on cart items
+    item_total = sum(
+        (item.product.sale_price if item.product.sale_price else item.product.regular_price) * item.quantity
+        for item in cart_items
+    )
+    
+    tax_charge = item_total * 0.10  # 10% tax
+    total = item_total + tax_charge
+
+    # ✅ Ensure cart_total updates correctly
+    cart_total, created = CartTotal.objects.get_or_create(customer=customer)
+
+    cart_total.item_total = item_total  # ✅ Update item_total
+    cart_total.tax_charge = tax_charge  # ✅ Update tax_charge
+    cart_total.total = total  # ✅ Update total
+    cart_total.save()  # ✅ Save the updated values
 
 
-# @login_required(login_url='/login/')
-# def product_detail(request, product_id):
-#     user = request.user
-#     product = get_object_or_404(Product, id=product_id)
-#     customer = get_object_or_404(Customer, user=user)
 
-#     # Default quantity is 1
-#     quantity = int(request.GET.get('quantity', 1))
 
-#     # Get product price (sale price if available, else regular price)
-#     product_price = product.sale_price if product.sale_price else product.regular_price
 
-#     # Calculate item total and tax
-#     item_total = product_price * quantity
-#     tax_charge = item_total * 0.10  # 10% tax
-#     total = item_total + tax_charge
+@login_required(login_url='/login/')
+def add_cart(request, id):
+    """
+    Adds a product to the cart.
+    """
+    customer = Customer.objects.get(user=request.user)
+    product = Product.objects.get(id=id)
 
-#     # Update or create CartTotal
-#     cart_total, created = CartTotal.objects.get_or_create(customer=customer)
-#     cart_total.item_total = item_total
-#     cart_total.tax_charge = tax_charge
-#     cart_total.total = total
-#     cart_total.save() 
+    # Check if the product is already in the cart
+    cart_item, created = CartItem.objects.get_or_create(
+        customer=customer,
+        product=product,
+        defaults={'quantity': 1, 'price': product.price}
+    )
 
-#     # Render the invoice template with updated cart bill
-#     context = {
-#         'cart_total': cart_total,
-#         'product': product,
-#         'quantity': quantity,
-#     }
-#     return render(request, 'customer/product.html', context)
+    if not created:
+        cart_item.quantity += 1
+        cart_item.price = cart_item.quantity * product.price
+        cart_item.save()
+
+    # Update cart totals
+    update_cart_total(customer)
+
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+@login_required(login_url='/login/')
+def cart_plus(request, id):
+    """
+    Increases the quantity of a product in the cart.
+    """
+    customer = Customer.objects.get(user=request.user)
+    product = get_object_or_404(Product, id=id)
+
+    # Use sale_price if available, otherwise use regular_price
+    product_price = product.sale_price if product.sale_price else product.regular_price
+
+    cart_item, created = CartItem.objects.get_or_create(
+        customer=customer,
+        product=product,
+        defaults={'quantity': 1, 'price': product_price}
+    )
+
+    if not created:
+        cart_item.quantity += 1
+        cart_item.price = cart_item.quantity * product_price
+        cart_item.save()
+
+    update_cart_total(customer)
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+@login_required(login_url='/login/')
+def cart_minus(request, id):
+    """
+    Decreases the quantity of a product in the cart.
+    Removes the product if the quantity reaches zero.
+    """
+    customer = Customer.objects.get(user=request.user)
+    product = get_object_or_404(Product, id=id)
+    cart_item = get_object_or_404(CartItem, customer=customer, product=product)
+
+    product_price = product.sale_price if product.sale_price else product.regular_price
+
+    if cart_item.quantity > 1:
+        cart_item.quantity -= 1
+        cart_item.price = cart_item.quantity * product_price
+        cart_item.save()
+    else:
+        cart_item.delete()
+
+    update_cart_total(customer)
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))  
+
+
+@login_required(login_url='/login/')
+def checkout(request):
+    """
+    Handles the checkout process for the customer.
+    """
+    customer = Customer.objects.get(user=request.user)
+    cart_items = CartItem.objects.filter(customer=customer)
+    cart_total = CartTotal.objects.filter(customer=customer).first()
+
+    # Check if the cart is empty
+    if not cart_items.exists():
+        messages.error(request, "Your cart is empty.")
+        return redirect('customers:cart_view')
+
+    if request.method == 'POST':
+        # Extract form data
+        payment_method = request.POST.get('payment')
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        email = request.POST.get('email')
+        phone_number = request.POST.get('phone_number')
+        city = request.POST.get('city')
+        state = request.POST.get('state')
+        pincode = request.POST.get('pincode')
+
+        # Validate required fields
+        required_fields = [first_name, last_name, email, phone_number]
+        if not all(required_fields):
+            messages.error(request, "Please fill in all required fields.")
+            return redirect('customers:checkout')
+
+        # Validate payment method
+        valid_payment_methods = ['credit_card', 'net_banking', 'cod']
+        if payment_method not in valid_payment_methods:
+            messages.error(request, "Please select a valid payment method.")
+            return redirect('customers:checkout')
+
+        # Ensure cart total exists
+        if not cart_total:
+            messages.error(request, "Error processing your order. Please try again.")
+            return redirect('customers:cart_view')
+
+        # Create the order
+        try:
+            order = Order.objects.create(
+                customer=customer,
+                order_id=str(uuid.uuid4().hex[:10]),  # ✅ Generate unique order ID
+                total=cart_total.total,
+                payment_method=payment_method,
+                first_name=first_name,
+                last_name=last_name,
+                email=email,
+                phone_number=phone_number,
+                city=city,
+                state=state,
+                pincode=pincode
+            )
+
+            # Move cart items to OrderItems
+            for item in cart_items:
+                OrderItem.objects.create(
+                    customer=customer,
+                    product=item.product,
+                    quantity=item.quantity,
+                    amount=item.product.sale_price if item.product.sale_price else item.product.regular_price
+                )
+                item.delete()  # ✅ Remove cart item after order placement
+
+            # Clear cart total after order is placed
+            cart_total.delete()  # ✅ Remove cart total after order placement
+
+            messages.success(request, "Order placed successfully!")
+            print("Redirecting to order_success...")  # ✅ Debugging print
+            return redirect('customers:order_success')  # ✅ Make sure this URL exists
+
+        except Exception as e:
+            messages.error(request, f"An error occurred while processing your order: {str(e)}")
+            return redirect('customers:checkout')
+
+    context = {
+        'cart_items': cart_items,
+        'cart_total': cart_total
+    }
+    return render(request, 'customer/checkout.html', context=context)
+
+@login_required(login_url='/login/')
+def order_success(request):
+    return render(request, 'customer/ordersucces.html')
 
 
 # def reviews_list(request):

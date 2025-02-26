@@ -1,0 +1,339 @@
+{% extends "base/customer-base.html" %}
+{% block container %}
+{% load static %}
+
+<section class="bg-green-500 min-h-[100vh] flex flex-col justify-center items-center text-white px-4 relative overflow-hidden">
+    <!-- Background Layers -->
+    <div class="absolute inset-0 bg-gradient-to-br from-green-600 via-green-500 to-green-700 animate-bgFlow">
+        <!-- Wave Layer -->
+        <div class="wave-layer animate-waveFlow"></div>
+        <!-- Starfield -->
+        <div class="starfield"></div>
+        <!-- Floating Orbs -->
+        <div class="glow-orb orb-1 animate-orbDrift"></div>
+        <div class="glow-orb orb-2 animate-orbDrift" style="animation-delay: 1.5s;"></div>
+        <div class="glow-orb orb-3 animate-orbDrift" style="animation-delay: 3s;"></div>
+    </div>
+
+    <!-- Main Card -->
+    <div class="bg-[#252424] p-6 sm:p-10 rounded-3xl shadow-3xl text-center max-w-xl w-full mx-4 
+                animate-grandEntrance relative z-20 overflow-hidden perspective-1000">
+        <!-- Particle System -->
+        <div class="absolute inset-0 pointer-events-none particle-system"></div>
+
+        <!-- Success Badge -->
+        <div class="success-badge animate-badgeSpin mb-8">
+            <img class="w-20 h-20 sm:w-24 sm:h-24 mx-auto" src="/static/images/checkmark.png" alt="">
+        </div>
+
+        <!-- Title -->
+        <h2 class="text-3xl sm:text-5xl font-extrabold text-yellow-400 mb-6 relative z-10 leading-tight">
+            <span class="inline-block animate-letterPop" style="animation-delay: 0.1s">🎉</span>
+            <span class="inline-block animate-letterPop" style="animation-delay: 0.2s">O</span>
+            <span class="inline-block animate-letterPop" style="animation-delay: 0.3s">r</span>
+            <span class="inline-block animate-letterPop" style="animation-delay: 0.4s">d</span>
+            <span class="inline-block animate-letterPop" style="animation-delay: 0.5s">e</span>
+            <span class="inline-block animate-letterPop" style="animation-delay: 0.6s">r</span>
+            <span class="inline-block animate-letterPop" style="animation-delay: 0.7s">&nbsp;</span>
+            <span class="inline-block animate-letterPop" style="animation-delay: 0.8s">S</span>
+            <span class="inline-block animate-letterPop" style="animation-delay: 0.9s">u</span>
+            <span class="inline-block animate-letterPop" style="animation-delay: 1.0s">c</span>
+            <span class="inline-block animate-letterPop" style="animation-delay: 1.1s">c</span>
+            <span class="inline-block animate-letterPop" style="animation-delay: 1.2s">e</span>
+            <span class="inline-block animate-letterPop" style="animation-delay: 1.3s">s</span>
+            <span class="inline-block animate-letterPop" style="animation-delay: 1.4s">s</span>
+            <span class="inline-block animate-letterPop" style="animation-delay: 1.5s">!</span>
+            <span class="inline-block animate-letterPop" style="animation-delay: 1.6s">🎉</span>
+        </h2>
+
+        <!-- Message -->
+        <p class="text-gray-300 mb-8 text-lg sm:text-xl animate-contentUnfold relative z-10 tracking-wide">
+            Thank you for your purchase! Your order has been successfully processed and 
+            is on its way to you. Celebrate this moment with us!
+        </p>
+
+        <!-- Button -->
+        <a href="{% url 'customers:index' %}" 
+           class="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold py-3 px-8 rounded-full 
+                  transition-all duration-500 transform hover:scale-110 hover:shadow-2xl inline-block 
+                  animate-buttonShine relative z-10 overflow-hidden">
+            <span class="relative z-20">Back to Home</span>
+            <span class="absolute inset-0 bg-yellow-300 animate-buttonRipple"></span>
+            <span class="absolute inset-0 shine-effect"></span>
+        </a>
+
+        <!-- Confetti Cannons -->
+        <div class="confetti-cannon cannon-left animate-confettiBurst"></div>
+        <div class="confetti-cannon cannon-right animate-confettiBurst" style="animation-delay: 0.5s;"></div>
+    </div>
+</section>
+
+<style>
+    /* Background Flow */
+    @keyframes bgFlow {
+        0%, 100% { background-position: 0% 0%; opacity: 0.9; }
+        50% { background-position: 100% 100%; opacity: 1; }
+    }
+
+    /* Wave Animation */
+    @keyframes waveFlow {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+    }
+
+    /* Grand Entrance */
+    @keyframes grandEntrance {
+        0% {
+            opacity: 0;
+            transform: perspective(1000px) rotateY(-90deg) scale(0.6);
+            filter: blur(10px) brightness(0.8);
+        }
+        60% {
+            transform: perspective(1000px) rotateY(20deg) scale(1.1);
+            filter: blur(0) brightness(1.1);
+        }
+        100% {
+            opacity: 1;
+            transform: perspective(1000px) rotateY(0) scale(1);
+            filter: blur(0) brightness(1);
+        }
+    }
+
+    /* Letter Pop */
+    @keyframes letterPop {
+        0% {
+            opacity: 0;
+            transform: translateY(60px) rotateZ(15deg) scale(0.7);
+            filter: blur(3px);
+        }
+        50% {
+            transform: translateY(-20px) rotateZ(-10deg) scale(1.2);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0) rotateZ(0) scale(1);
+            filter: blur(0);
+        }
+    }
+
+    /* Content Unfold */
+    @keyframes contentUnfold {
+        0% {
+            opacity: 0;
+            transform: translateY(80px) scaleY(0.8);
+            clip-path: polygon(0 100%, 100% 100%, 100% 100%, 0 100%);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0) scaleY(1);
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+        }
+    }
+
+    /* Badge Spin */
+    @keyframes badgeSpin {
+        0% { transform: rotateY(-180deg) scale(0); opacity: 0; }
+        100% { transform: rotateY(0) scale(1); opacity: 1; }
+    }
+
+    /* Button Effects */
+    @keyframes buttonShine {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.8); }
+        50% { box-shadow: 0 0 25px 10px rgba(251, 191, 36, 0.6); }
+    }
+
+    @keyframes buttonRipple {
+        0% { transform: scale(0); opacity: 0.7; }
+        100% { transform: scale(5); opacity: 0; }
+    }
+
+    /* Particle Explode */
+    @keyframes particleExplode {
+        0% {
+            opacity: 0;
+            transform: scale(0) translate(0, 0);
+        }
+        40% {
+            opacity: 1;
+            transform: scale(1.2) translate(var(--x-move), var(--y-move));
+        }
+        100% {
+            opacity: 0;
+            transform: scale(0.8) translate(calc(var(--x-move) * 1.5), calc(var(--y-move) * 1.5));
+        }
+    }
+
+    /* Confetti Burst */
+    @keyframes confettiBurst {
+        0% { transform: scale(0); opacity: 0; }
+        50% { transform: scale(1); opacity: 1; }
+        100% { transform: scale(0); opacity: 0; }
+    }
+
+    /* Orb Drift */
+    @keyframes orbDrift {
+        0% { transform: translate(0, 0) scale(1); opacity: 0.2; }
+        50% { transform: translate(var(--x-drift), var(--y-drift)) scale(1.2); opacity: 0.4; }
+        100% { transform: translate(0, 0) scale(1); opacity: 0.2; }
+    }
+
+    /* Star Twinkle */
+    @keyframes starTwinkle {
+        0%, 100% { opacity: 0.3; transform: scale(1); }
+        50% { opacity: 1; transform: scale(1.5); }
+    }
+
+    /* Class Applications */
+    .animate-bgFlow { animation: bgFlow 6s ease-in-out infinite; }
+    .animate-waveFlow { animation: waveFlow 10s linear infinite; }
+    .animate-grandEntrance { animation: grandEntrance 1.5s ease-out forwards; }
+    .animate-letterPop { animation: letterPop 0.7s ease-out forwards; }
+    .animate-contentUnfold { animation: contentUnfold 1.2s ease-out 1s forwards; }
+    .animate-badgeSpin { animation: badgeSpin 1s ease-out forwards; }
+    .animate-buttonShine { animation: buttonShine 2.5s ease-in-out infinite; }
+    .animate-buttonRipple { animation: buttonRipple 2s ease-out infinite; }
+    .animate-particleExplode { animation: particleExplode 2.5s ease-out infinite; }
+    .animate-confettiBurst { animation: confettiBurst 3s ease-out infinite; }
+    .animate-orbDrift { animation: orbDrift 5s ease-in-out infinite; }
+    .animate-starTwinkle { animation: starTwinkle 2s ease-in-out infinite; }
+
+    /* Structural Styles */
+    .perspective-1000 { perspective: 1000px; }
+    .wave-layer {
+        position: absolute;
+        bottom: 0;
+        width: 200%;
+        height: 20%;
+        background: rgba(255, 255, 255, 0.1);
+        clip-path: url(#waveClip);
+    }
+
+    .starfield { position: absolute; inset: 0; }
+    .star {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        background: white;
+        border-radius: 50%;
+        animation: starTwinkle 2s ease-in-out infinite;
+    }
+
+    .glow-orb {
+        position: absolute;
+        width: 120px;
+        height: 120px;
+        background: radial-gradient(circle, rgba(251, 191, 36, 0.4) 0%, rgba(251, 191, 36, 0) 70%);
+        border-radius: 50%;
+    }
+    .orb-1 { left: 15%; top: 10%; --x-drift: -30px; --y-drift: 40px; }
+    .orb-2 { right: 20%; bottom: 15%; --x-drift: 40px; --y-drift: -30px; }
+    .orb-3 { left: 50%; top: 50%; --x-drift: -20px; --y-drift: -50px; }
+
+    .particle {
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        background: radial-gradient(circle, #FBBF24 0%, rgba(251, 191, 36, 0) 70%);
+        border-radius: 50%;
+    }
+
+    .confetti-cannon {
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        background: #FBBF24;
+        transform-origin: center;
+    }
+    .cannon-left { left: -10px; bottom: -10px; }
+    .cannon-right { right: -10px; bottom: -10px; }
+
+    .shine-effect {
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(45deg, rgba(255, 255, 255, 0) 45%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0) 55%);
+        animation: shineSweep 4s infinite;
+    }
+
+    @keyframes shineSweep {
+        0% { transform: translateX(-100%) translateY(-100%); }
+        20% { transform: translateX(100%) translateY(100%); }
+        100% { transform: translateX(100%) translateY(100%); }
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 640px) {
+        .text-3xl { font-size: 1.875rem; }
+        .text-lg { font-size: 1rem; }
+        .particle { width: 8px; height: 8px; }
+        .glow-orb { width: 80px; height: 80px; }
+        .star { width: 3px; height: 3px; }
+        .confetti-cannon { width: 15px; height: 15px; }
+    }
+
+    @media (min-width: 1024px) {
+        .max-w-xl { max-width: 42rem; }
+    }
+</style>
+
+<!-- SVG Clip Path for Wave -->
+<svg width="0" height="0">
+    <defs>
+        <clipPath id="waveClip">
+            <path d="M0,100 Q300,0 600,100 T1200,100 V200 H0 Z" />
+        </clipPath>
+    </defs>
+</svg>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Dynamic Particles
+        const particleSystem = document.querySelector('.particle-system');
+        for (let i = 0; i < 30; i++) {
+            const particle = document.createElement('span');
+            particle.className = `particle particle-${i + 1} animate-particleExplode`;
+            particle.style.setProperty('--x-move', `${Math.random() * 200 - 100}px`);
+            particle.style.setProperty('--y-move', `${Math.random() * 200 - 100}px`);
+            particle.style.animationDelay = `${Math.random() * 2}s`;
+            particleSystem.appendChild(particle);
+        }
+
+        // Dynamic Confetti
+        const cannons = document.querySelectorAll('.confetti-cannon');
+        cannons.forEach(cannon => {
+            for (let i = 0; i < 20; i++) {
+                const confetti = document.createElement('span');
+                confetti.className = 'confetti-piece';
+                confetti.style.width = `${Math.random() * 10 + 5}px`;
+                confetti.style.height = confetti.style.width;
+                confetti.style.background = `hsl(${Math.random() * 360}, 80%, 60%)`;
+                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                confetti.style.animation = `confettiFall ${1.5 + Math.random() * 2}s ease-out forwards`;
+                confetti.style.animationDelay = `${Math.random()}s`;
+                confetti.style.transform = `translate(${Math.random() * 100 - 50}px, ${Math.random() * -100 - 50}px)`;
+                cannon.appendChild(confetti);
+            }
+        });
+
+        // Dynamic Starfield
+        const starfield = document.querySelector('.starfield');
+        for (let i = 0; i < 20; i++) {
+            const star = document.createElement('span');
+            star.className = 'star animate-starTwinkle';
+            star.style.left = `${Math.random() * 100}%`;
+            star.style.top = `${Math.random() * 100}%`;
+            star.style.animationDelay = `${Math.random() * 2}s`;
+            starfield.appendChild(star);
+        }
+
+        // Play Celebration Sound
+        const audio = new Audio('/static/sounds/celebration.mp3');
+        audio.play().catch(() => {
+            console.log('Autoplay was blocked. Please interact with the page to play sound.');
+        });
+    });
+</script>
+
+{% endblock %}

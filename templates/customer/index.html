@@ -7,27 +7,91 @@
 {% include 'includes/customer-header.html' %}
 
     
-    <section class="home-bg1">
-        <div class="flex flex-col md:flex-row items-center md:p-80 p-10 ">
-            <div class="w-full md:w-[45%] mb-8 md:mb-0">
-                <h1 class="text-[40px] md:text-[60px] lg:text-[90px] text-white font-bold leading-tight">
-                    Online Vehicle Repairing Service
-                </h1>
-            </div>
-            <div class="w-full md:w-[55%] md:ml-10">
-                <p class="text-[16px] md:text-[18px] lg:text-[20px] leading-6 md:leading-9 font-medium mt-4 md:mt-10 text-white">
-                    Lorem ipsum dolor sit amet consectetur. Tellus id fringilla mauris a donec faucibus ipsum id. Tortor pharetra ut pellentesque urna auctor massa eros nunc. Vitae risus ullamcorper porttitor ultrices. In pharetra morbi erat in arcu pretium vivamus aliquam. Quis volutpat semper viverra diam. Aliquam ipsum elit amet risus sed. Sapien pretium pretium vitae aliquam praesent.
-                </p>
-                <div class="flex justify-center md:justify-end">
-                    <button class="px-6 py-3 rounded-xl hover:bg-[#797d25] bg-[#B1BA08] mt-6">
-                        <a class="text-white text-[16px] md:text-[18px] font-medium" href="{% url 'customers:service' %}">BOOK NOW</a>
-                    </button>
-                </div>
+<section class="home-bg1 relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-black/80 to-transparent animate-bgFade"></div>
+    <div class="flex flex-col md:flex-row items-center md:p-80 p-10 relative z-10">
+        <div class="w-full md:w-[45%] mb-8 md:mb-0">
+            <h1 class="text-[40px] md:text-[60px] lg:text-[90px] text-white font-bold leading-tight animate-titleReveal">
+                <span class="inline-block">Online</span>
+                <span class="inline-block">Vehicle</span>
+                <span class="inline-block">Repairing</span>
+                <span class="inline-block">Service</span>
+            </h1>
+        </div>
+        <div class="w-full md:w-[55%] md:ml-10">
+            <p class="text-[16px] md:text-[18px] lg:text-[20px] leading-6 md:leading-9 font-medium mt-4 md:mt-10 text-white animate-textFade">
+                Lorem ipsum dolor sit amet consectetur. Tellus id fringilla mauris a donec faucibus ipsum id. Tortor pharetra ut pellentesque urna auctor massa eros nunc. Vitae risus ullamcorper porttitor ultrices. In pharetra morbi erat in arcu pretium vivamus aliquam. Quis volutpat semper viverra diam. Aliquam ipsum elit amet risus sed. Sapien pretium pretium vitae aliquam praesent.
+            </p>
+            <div class="flex justify-center md:justify-end">
+                <button class="px-6 py-3 rounded-xl bg-[#B1BA08] mt-6 animate-buttonPop transition-all duration-300 hover:bg-[#797d25] hover:scale-105 hover:shadow-lg group">
+                    <a class="text-white text-[16px] md:text-[18px] font-medium" href="{% url 'customers:service' %}">
+                        BOOK NOW
+                        <span class="inline-block ml-2 group-hover:translate-x-1 transition-transform duration-300">→</span>
+                    </a>
+                </button>
             </div>
         </div>
-        
+    </div>
+</section>
 
-    </section>
+<style>
+    /* Background Animation */
+    @keyframes bgFade {
+        0%, 100% { opacity: 0.8; }
+        50% { opacity: 1; }
+    }
+
+    /* Title Animation */
+    @keyframes titleReveal {
+        0% {
+            opacity: 0;
+            transform: translateY(30px) scale(0.9);
+            filter: blur(2px);
+        }
+        60% {
+            transform: translateY(-5px) scale(1.02);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            filter: blur(0);
+        }
+    }
+
+    /* Text Animation */
+    @keyframes textFade {
+        0% { opacity: 0; transform: translateY(20px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Button Animation */
+    @keyframes buttonPop {
+        0% { opacity: 0; transform: scale(0.8); }
+        60% { transform: scale(1.1); }
+        100% { opacity: 1; transform: scale(1); }
+    }
+
+    /* Animation Classes */
+    .animate-bgFade { animation: bgFade 6s ease-in-out infinite; }
+    .animate-titleReveal span { animation: titleReveal 0.8s ease-out forwards; }
+    .animate-textFade { animation: textFade 0.8s ease-out 0.5s forwards; }
+    .animate-buttonPop { animation: buttonPop 0.7s ease-out 0.8s forwards; }
+
+    /* Staggered Delays for Title Words */
+    .animate-titleReveal span:nth-child(1) { animation-delay: 0.2s; }
+    .animate-titleReveal span:nth-child(2) { animation-delay: 0.3s; }
+    .animate-titleReveal span:nth-child(3) { animation-delay: 0.4s; }
+    .animate-titleReveal span:nth-child(4) { animation-delay: 0.5s; }
+
+    /* Hover Effects */
+    .group:hover {
+        box-shadow: 0 4px 12px rgba(177, 186, 8, 0.5);
+    }
+
+    /* Ensure proper styling */
+    h1 span { display: inline-block; }
+    .home-bg1 { position: relative; }
+</style>
     
     <section class="home-bg2">
         <div class="p-6 md:p-12 lg:p-[100px] ">

@@ -157,6 +157,12 @@ class CartTotal(models.Model):
         return self.customer.user.email
 
 class Order(CommonModel):
+    PAYMENT_METHODS = [
+        ('credit_card', 'Credit Card'),
+        ('net_banking', 'Net Banking'),
+        ('cod', 'Cash on Delivery'),
+    ]
+
     customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True)
     order_id = models.CharField(max_length=35)
     items = models.ManyToManyField(OrderItem)
@@ -171,6 +177,9 @@ class Order(CommonModel):
     city = models.CharField(max_length=25, blank=True, null=True)
     state = models.CharField(max_length=25, blank=True, null=True)
     pincode = models.CharField(max_length=25, blank=True, null=True)
+    
+    # ✅ Add this field
+    payment_method = models.CharField(max_length=20, choices=PAYMENT_METHODS, default='cod')
 
     class Meta:
         db_table = 'customers_order'
@@ -180,6 +189,7 @@ class Order(CommonModel):
 
     def __str__(self):
         return self.order_id
+
     
     
 class Service(CommonModel):
