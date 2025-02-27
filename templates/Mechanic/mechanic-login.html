@@ -22,7 +22,7 @@
             </div>
         {% endif %}
 
-        <form action="{% url 'customers:mechanic-login' %}" method="POST">
+        <form action="{% url 'providers:mechanic-login' %}" method="POST">
             {% csrf_token %}
 
             <div class="mb-4">
@@ -56,12 +56,6 @@
                 Login
             </button>
         </form>
-
-        <p class="text-center mt-4">
-            <a href="{% url 'customers:signup' %}" class="text-white font-semibold">
-                Don't have an account? Sign Up
-            </a>
-        </p>
     </div>
 </section>
 

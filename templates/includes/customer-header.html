@@ -108,8 +108,9 @@
                 <a href="{% url 'customers:client-account' %}">Manage Profile</a>
             </p>
             <p class="text-[16px] py-2 text-white hover:text-red-500">
-                <a href="#">View Orders</a>
+                <a href="{% url 'customers:order-item'  %}">View Orders</a>
             </p>
+            
             {% if user.is_authenticated %}
             <p class="text-[16px] py-2 text-white hover:text-red-500">
                 <a href="{% url 'customers:logout' %}">Logout</a>
