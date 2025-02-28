@@ -3,11 +3,11 @@
 {% load static %}
 {% include 'includes/customer-header.html' %}
 
-<section class="bg-black h-[100vh] pt-24 overflow-hidden">
-  <div class="max-w-4xl mx-auto pt-20 bg-[#252424] text-white p-6 rounded-lg shadow-md flex justify-between space-x-8">
+<section class="bg-black min-h-screen pt-16 md:pt-24 overflow-hidden">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 bg-[#252424] text-white rounded-lg shadow-md flex flex-col lg:flex-row lg:space-x-8 space-y-8 lg:space-y-0">
+    
     <!-- Left Side: Payment Details -->
-    <div class="w-1/2 animate-slide-left">
-      <!-- Messages -->
+    <div class="w-full lg:w-1/2 animate-slide-left">
       {% if messages %}
       <div class="mb-6">
         {% for message in messages %}
@@ -18,24 +18,23 @@
       </div>
       {% endif %}
 
-      <!-- Price Details -->
       <div class="mb-6">
         <h2 class="text-lg font-semibold mb-4 text-yellow-400">Price Details</h2>
         {% for item in cart_items %}
-        <div class="flex justify-between mb-2 text-gray-200">
+        <div class="flex justify-between mb-2 text-gray-200 text-sm sm:text-base">
           <span>{{ item.product.name }} (x{{ item.quantity }})</span>
           <span class="font-medium">₹{{ item.product.sale_price|default:item.product.regular_price }}</span>
         </div>
         {% endfor %}
-        <div class="flex justify-between mb-2 text-gray-200">
+        <div class="flex justify-between mb-2 text-gray-200 text-sm sm:text-base">
           <span>Subtotal</span>
           <span class="font-medium">₹{{ cart_total.item_total }}</span>
         </div>
-        <div class="flex justify-between mb-2 text-gray-200">
+        <div class="flex justify-between mb-2 text-gray-200 text-sm sm:text-base">
           <span>Tax (10%)</span>
           <span class="font-medium text-yellow-400">₹{{ cart_total.tax_charge }}</span>
         </div>
-        <div class="flex justify-between border-t border-gray-700 pt-2 text-gray-100">
+        <div class="flex justify-between border-t border-gray-700 pt-2 text-gray-100 text-sm sm:text-base">
           <span class="font-semibold">Total Amount</span>
           <span class="font-semibold">₹{{ cart_total.total }}</span>
         </div>
@@ -43,114 +42,42 @@
     </div>
 
     <!-- Right Side: Shipping Details and Payment Options -->
-    <div class="w-1/2 animate-slide-right">
+    <div class="w-full lg:w-1/2 animate-slide-right">
       <form method="post" action="{% url 'customers:checkout' %}" class="space-y-6">
         {% csrf_token %}
         <h2 class="text-lg font-semibold mb-4 text-yellow-400">Shipping Details</h2>
-        <div class="space-y-4">
-          <input 
-            type="text" 
-            name="first_name" 
-            placeholder="First Name" 
-            value="{{ form_data.first_name|default:'' }}" 
-            required 
-            class="w-full p-2 bg-gray-800 text-gray-200 rounded-lg border border-gray-700 focus:outline-none focus:ring focus:ring-yellow-400 transition-all duration-300 hover:bg-gray-700 placeholder-gray-400" 
-          />
-          <input 
-            type="text" 
-            name="last_name" 
-            placeholder="Last Name" 
-            value="{{ form_data.last_name|default:'' }}" 
-            required 
-            class="w-full p-2 bg-gray-800 text-gray-200 rounded-lg border border-gray-700 focus:outline-none focus:ring focus:ring-yellow-400 transition-all duration-300 hover:bg-gray-700 placeholder-gray-400" 
-          />
-          <input 
-            type="email" 
-            name="email" 
-            placeholder="Email" 
-            value="{{ form_data.email|default:'' }}" 
-            required 
-            class="w-full p-2 bg-gray-800 text-gray-200 rounded-lg border border-gray-700 focus:outline-none focus:ring focus:ring-yellow-400 transition-all duration-300 hover:bg-gray-700 placeholder-gray-400" 
-          />
-          <input 
-            type="text" 
-            name="phone_number" 
-            placeholder="Phone Number" 
-            value="{{ form_data.phone_number|default:'' }}" 
-            required 
-            class="w-full p-2 bg-gray-800 text-gray-200 rounded-lg border border-gray-700 focus:outline-none focus:ring focus:ring-yellow-400 transition-all duration-300 hover:bg-gray-700 placeholder-gray-400" 
-          />
-          <input 
-            type="text" 
-            name="city" 
-            placeholder="City" 
-            value="{{ form_data.city|default:'' }}" 
-            required 
-            class="w-full p-2 bg-gray-800 text-gray-200 rounded-lg border border-gray-700 focus:outline-none focus:ring focus:ring-yellow-400 transition-all duration-300 hover:bg-gray-700 placeholder-gray-400" 
-          />
-          <input 
-            type="text" 
-            name="state" 
-            placeholder="State" 
-            value="{{ form_data.state|default:'' }}" 
-            required 
-            class="w-full p-2 bg-gray-800 text-gray-200 rounded-lg border border-gray-700 focus:outline-none focus:ring focus:ring-yellow-400 transition-all duration-300 hover:bg-gray-700 placeholder-gray-400" 
-          />
-          <input 
-            type="text" 
-            name="pincode" 
-            placeholder="Pincode" 
-            value="{{ form_data.pincode|default:'' }}" 
-            required 
-            class="w-full p-2 bg-gray-800 text-gray-200 rounded-lg border border-gray-700 focus:outline-none focus:ring focus:ring-yellow-400 transition-all duration-300 hover:bg-gray-700 placeholder-gray-400" 
-          />
+        <div class="grid grid-cols-1 gap-4 font-medium text-[18px] text-black sm:grid-cols-2">
+          <input type="text" name="first_name" placeholder="First Name" value="{{ form_data.first_name|default:'' }}" required class="input-field"/>
+          <input type="text" name="last_name" placeholder="Last Name" value="{{ form_data.last_name|default:'' }}" required class="input-field"/>
+          <input type="email" name="email" placeholder="Email" value="{{ form_data.email|default:'' }}" required class="input-field sm:col-span-2"/>
+          <input type="text" name="phone_number" placeholder="Phone Number" value="{{ form_data.phone_number|default:'' }}" required class="input-field sm:col-span-2"/>
+          <input type="text" name="city" placeholder="City" value="{{ form_data.city|default:'' }}" required class="input-field"/>
+          <input type="text" name="location" placeholder="Curract Location" value="{{ form_data.location|default:'' }}" required class="input-field"/>
+          <input type="text" name="state" placeholder="State" value="{{ form_data.state|default:'' }}" required class="input-field"/>
+          <input type="text" name="pincode" placeholder="Pincode" value="{{ form_data.pincode|default:'' }}" required class="input-field sm:col-span-2"/>
         </div>
 
         <!-- Payment Options -->
         <div class="mb-6">
           <h2 class="text-lg font-semibold mb-4 text-yellow-400">Payment Options</h2>
-          <div class="space-y-2">
-            <label class="flex items-center space-x-3 cursor-pointer transition-all duration-300 hover:text-yellow-400 text-gray-200">
-              <input 
-                type="radio" 
-                name="payment" 
-                value="g_pay" 
-                {% if form_data.payment == "g_pay" %}checked{% endif %}
-                required 
-                class="w-4 h-4 text-yellow-400 bg-gray-800 border-gray-700 focus:ring-yellow-400 focus:ring-2 transform transition-transform duration-300 hover:scale-110" 
-              />
+          <div class="space-y-3">
+            <label class="flex items-center space-x-3 text-gray-200 hover:text-yellow-400">
+              <input type="radio" name="payment" value="g_pay" {% if form_data.payment == "g_pay" %}checked{% endif %} required class="radio-input"/>
               <span>G Pay</span>
             </label>
-            <label class="flex items-center space-x-3 cursor-pointer transition-all duration-300 hover:text-yellow-400 text-gray-200">
-              <input 
-                type="radio" 
-                name="payment" 
-                value="phone_pay" 
-                {% if form_data.payment == "phone_pay" %}checked{% endif %}
-                required 
-                class="w-4 h-4 text-yellow-400 bg-gray-800 border-gray-700 focus:ring-yellow-400 focus:ring-2 transform transition-transform duration-300 hover:scale-110" 
-              />
+            <label class="flex items-center space-x-3 text-gray-200 hover:text-yellow-400">
+              <input type="radio" name="payment" value="phone_pay" {% if form_data.payment == "phone_pay" %}checked{% endif %} required class="radio-input"/>
               <span>Phone Pay</span>
             </label>
-            <label class="flex items-center space-x-3 cursor-pointer transition-all duration-300 hover:text-yellow-400 text-gray-200">
-              <input 
-                type="radio" 
-                name="payment" 
-                value="cod" 
-                {% if form_data.payment == "cod" %}checked{% endif %}
-                required 
-                class="w-4 h-4 text-yellow-400 bg-gray-800 border-gray-700 focus:ring-yellow-400 focus:ring-2 transform transition-transform duration-300 hover:scale-110" 
-              />
+            <label class="flex items-center space-x-3 text-gray-200 hover:text-yellow-400">
+              <input type="radio" name="payment" value="cod" {% if form_data.payment == "cod" %}checked{% endif %} required class="radio-input"/>
               <span>COD</span>
             </label>
           </div>
         </div>
 
         <!-- Pay Button -->
-        <button 
-          type="submit" 
-          class="w-full py-2 text-center text-gray-900 font-semibold bg-yellow-400 hover:bg-yellow-500 rounded-lg focus:outline-none focus:ring focus:ring-yellow-300 transition-all duration-300 hover:scale-105 animate-bounce-in"
-        >
+        <button type="submit" class="w-full py-3 text-gray-900 font-semibold bg-yellow-400 hover:bg-yellow-500 rounded-lg focus:outline-none focus:ring focus:ring-yellow-300 transition-all duration-300 hover:scale-105 animate-bounce-in">
           Pay Now
         </button>
       </form>
@@ -175,5 +102,14 @@
   .animate-slide-left { animation: slideLeft 0.7s ease-in-out forwards; }
   .animate-slide-right { animation: slideRight 0.7s ease-in-out forwards; }
   .animate-bounce-in { animation: bounceIn 0.5s ease-in-out forwards; }
+
+  /* Updated Input Field Styling */
+  .input-field {
+    @apply w-full p-2   text-black rounded-lg border border-gray-700 focus:outline-none focus:ring focus:ring-yellow-400 transition-all duration-300  ;
+  }
+  .radio-input {
+    @apply w-4 h-4 text-yellow-400 bg-gray-800 border-gray-700 focus:ring-yellow-400 focus:ring-2 transform transition-transform duration-300 hover:scale-110;
+  }
 </style>
+
 {% endblock %}

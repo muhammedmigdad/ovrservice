@@ -139,16 +139,15 @@ def index(request):
 
 
 
-
-
-
-
 @login_required(login_url='/login/')
 def contact(request):
     return render(request, 'customer/contact.html')
 
 def notification(request):
     return render(request, 'customer/notification.html')
+
+def tracking(request):
+    return render(request, 'customer/tracking.html')
 
 def products(request, id=None):
     storecategories = StoreCategory.objects.select_related('store').all()  # Ensures store details are fetched
@@ -422,13 +421,18 @@ def checkout(request):
                 'pincode': pincode,
                 'cart_total': float(cart_total.total),  # Assumes total is numeric in model
             }
+
+            # If COD is selected, redirect to order success page
+            if payment_method == "cod":
+                return redirect('customers:order_success')  # Redirect to order success page for COD
+
+            # Redirect to payment processing page for other payment methods
             return redirect('customers:payment')
+
         except ValueError:
             messages.error(request, "Invalid cart total value.")
-            return render(request, 'customer/checkout.html', {'cart_items': cart_items, 'cart_total': cart_total, 'form_data': form_data})
         except Exception as e:
             messages.error(request, f"An error occurred while processing your request: {str(e)}")
-            return render(request, 'customer/checkout.html', {'cart_items': cart_items, 'cart_total': cart_total, 'form_data': form_data})
 
     context = {'cart_items': cart_items, 'cart_total': cart_total, 'form_data': form_data}
     return render(request, 'customer/checkout.html', context)

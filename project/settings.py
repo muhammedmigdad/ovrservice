@@ -28,7 +28,6 @@ INSTALLED_APPS = [
     'customers',
     'spareparts',
     'providers',
-    'mechanic',
 ]
 
 MIDDLEWARE = [
