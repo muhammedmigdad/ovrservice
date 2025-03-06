@@ -12,37 +12,50 @@
     <div class="w-full max-w-2xl space-y-4">
         <!-- Notification Item -->
         <div class="bg-gray-800 p-4 rounded-xl flex items-center space-x-4 text-white">
-            <img src="{% static 'images/men1.png' %}" alt="User" class="w-12 h-12 rounded-full">
+            <img src="{% static 'web/images/men1.png' %}" alt="User" class="w-12 h-12 rounded-full">
             <div class="flex-1">
                 <h3 class="text-lg font-semibold">Lorem Ipsum</h3>
                 <p class="text-gray-400 text-sm">Lorem ipsum dolor sit amet consectetur. Aliquet tristique netus posuere nisl tortor sapien.</p>
             </div>
-            <button class="bg-green-500 px-4 py-1 rounded-full text-white hover:bg-green-600">Tracking</button>
+            <a href="{% url 'customers:tracking' %}" class="bg-green-500 px-4 py-1 rounded-full text-white hover:bg-green-600">Tracking</a>
             <span class="text-gray-500 text-sm">Now</span>
         </div>
         
         <!-- Duplicate for multiple items -->
         <div class="bg-gray-800 p-4 rounded-xl flex items-center space-x-4 text-white">
-            <img src="{% static 'images/men1.png' %}" alt="User" class="w-12 h-12 rounded-full">
+            <img src="{% static 'web/images/men1.png' %}" alt="User" class="w-12 h-12 rounded-full">
             <div class="flex-1">
                 <h3 class="text-lg font-semibold">Lorem Ipsum</h3>
                 <p class="text-gray-400 text-sm">Lorem ipsum dolor sit amet consectetur. Aliquet tristique netus posuere nisl tortor sapien.</p>
             </div>
-            <button class="bg-green-500 px-4 py-1 rounded-full text-white hover:bg-green-600">Tracking</button>
+            <a href="{% url 'customers:tracking' %}" class="bg-green-500 px-4 py-1 rounded-full text-white hover:bg-green-600">Tracking</a>
             <span class="text-gray-500 text-sm">Now</span>
         </div>
         
         <div class="bg-gray-800 p-4 rounded-xl flex items-center space-x-4 text-white">
-            <img src="{% static 'images/men1.png' %}" alt="User" class="w-12 h-12 rounded-full">
+            <img src="{% static 'web/images/men1.png' %}" alt="User" class="w-12 h-12 rounded-full">
             <div class="flex-1">
                 <h3 class="text-lg font-semibold">Lorem Ipsum</h3>
                 <p class="text-gray-400 text-sm">Lorem ipsum dolor sit amet consectetur. Aliquet tristique netus posuere nisl tortor sapien.</p>
             </div>
-            <button class="bg-green-500 px-4 py-1 rounded-full text-white hover:bg-green-600">Tracking</button>
+            <a href="{% url 'customers:tracking' %}" class="bg-green-500 px-4 py-1 rounded-full text-white hover:bg-green-600">Tracking</a>
             <span class="text-gray-500 text-sm">Now</span>
 
         </div>
     </div>
+
 </section>
+<div class="container mx-auto p-6">
+    <h2 class="text-2xl font-bold mb-4">Notifications</h2>
+    <ul class="bg-gray-100 p-4 rounded-lg shadow-md">
+        {% for notification in notifications %}
+            <li class="py-2 px-3 {% if notification.is_read %}text-gray-500{% else %}text-black font-bold{% endif %}">
+                {{ notification.message }} - <span class="text-sm text-gray-600">{{ notification.created_at }}</span>
+            </li>
+        {% empty %}
+            <li class="text-gray-500">No notifications available.</li>
+        {% endfor %}
+    </ul>
+</div>
 
 {% endblock %}

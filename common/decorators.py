@@ -18,7 +18,7 @@ def allow_manager(fuction):
                 return HttpResponse(json.dumps(response_data),content_type="application/json")
 
             else:
-                return HttpResponseRedirect(reverse("managers:logout"))
+                return HttpResponseRedirect(reverse("manager:logout"))
 
         
         return fuction(request, *args, **kwargs)

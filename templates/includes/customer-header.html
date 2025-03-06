@@ -2,7 +2,7 @@
 <header class="flex justify-between h-20 bg-black items-center p-3 px-4">
     <div>
         <a href="{% url 'customers:index' %}">
-            <img src="{% static 'images/logo0.1.png' %}" alt="Logo" class="h-16 w-44">
+            <img src="{% static 'web/images/logo0.1.png' %}" alt="Logo" class="h-16 w-44">
         </a>
     </div>
     
@@ -24,13 +24,46 @@
                 Contact us
                 <span class="nav-underline"></span>
             </a>
-            <a href="{% url 'customers:notification' %}" 
-            class="text-white text-[20px] font-bold animate-navItem transition-all duration-500 ease-in-out hover:text-red-500 hover:scale-110 relative group">
-             Notifications
-             <span class="nav-underline"></span>
-         </a>
+            <a id="notification-link" href="{% url 'customers:notification' %}" class="relative text-white text-[20px] font-bold transition-all hover:text-red-500 hover:scale-110">
+                Notifications
+                <span id="notification-badge" class="absolute -top-2 -right-2 bg-white text-black text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center {% if notification_count == 0 %}hidden{% endif %}">
+                    {{ notification_count }}
+                </span>
+            </a>
+            
+            
         </nav>        
     </div>
+    <script>
+        function fetchNotifications() {
+            fetch("{% url 'customers:notification-count' %}")
+                .then(response => response.json())
+                .then(data => {
+                    const badge = document.getElementById("notification-badge");
+                    if (data.count > 0) {
+                        badge.innerText = data.count;
+                        badge.classList.remove("hidden");
+                    } else {
+                        badge.classList.add("hidden");
+                    }
+                });
+        }
+    
+        function markNotificationsAsRead() {
+            fetch("{% url 'customers:mark-notifications-read' %}", { 
+                method: "POST", 
+                headers: {'X-CSRFToken': '{{ csrf_token }}'}
+            })
+            .then(response => response.json())
+            .then(() => {
+                document.getElementById("notification-badge").classList.add("hidden");
+            });
+        }
+    
+        document.getElementById("notification-link").addEventListener("click", markNotificationsAsRead);
+        setInterval(fetchNotifications, 30000); // Refresh every 30 seconds
+    </script>
+    
     
     <style>
         /* Animation Keyframes */
@@ -96,13 +129,13 @@
     <!-- Account Icon -->
     <div class="hidden md:block relative">   
         <a href="#" id="accountIcon">
-            <img src="{% static 'images/account.png' %}" alt="Account" class="h-8 w-10">
+            <img src="{% static 'web/images/account.png' %}" alt="Account" class="h-8 w-10">
         </a>
     
         <!-- Profile Menu with Animation -->
         <div id="profile-menu" 
              class="hidden opacity-0 translate-y-[-10px] absolute z-50 top-[80px] right-0 bg-black border shadow-lg rounded-xl p-5 w-[240px] transition-all duration-300 ease-in-out">
-            <img src="{% static 'images/account.png' %}" alt="Account" class="h-8 w-10 block mx-auto mb-3">
+            <img src="{% static 'web/images/account.png' %}" alt="Account" class="h-8 w-10 block mx-auto mb-3">
             
             <p class="text-[16px] py-2 text-white hover:text-red-500">
                 <a href="{% url 'customers:client-account' %}">Manage Profile</a>
@@ -138,6 +171,16 @@
     <a href="{% url 'customers:index' %}" class="block pb-3 text-[16px] font-semibold hover:text-purple-500 mb-3 border-b border-gray-300 hover:underline">Home</a>
     <a href="{% url 'customers:service' %}" class="block pb-3 text-[16px] font-semibold hover:text-purple-500 mb-3 border-b border-gray-300 hover:underline">Services</a>
     <a href="{% url 'customers:contact' %}" class="block pb-3 text-[16px] font-semibold hover:text-purple-500 mb-3 border-b border-gray-300 hover:underline">Contact us</a>
+    <a href="{% url 'customers:notification' %}" 
+    class="block pb-3 text-[16px] font-semibold hover:text-purple-500 mb-3 border-b border-gray-300 hover:underline relative">
+     Notifications
+     <span id="notification-badge-mobile"
+           class="absolute -top-2 -right-2 bg-white text-black text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center
+           {% if notification_count == 0 %}hidden{% endif %}">
+         {{ notification_count }}
+     </span>
+ </a>
+ 
     <p class="pb-3 mb-3 border-b border-gray-300">
         <a href="#" class="text-[16px] font-semibold hover:text-purple-500">View Orders</a>
     </p>

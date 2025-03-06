@@ -1,0 +1,48 @@
+{% extends 'base/manager-base.html' %}
+{% load static %}
+{% block container %}
+{% include 'includes/manager-nav.html' %}
+
+<div class="content-body">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">{% if instance %}Edit Store{% else %}Add Store{% endif %}</h4>
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="id_name">Name</label>
+                                {{ form.name }}
+                            </div>
+                            <div class="form-group">
+                                <label for="id_store">Store User</label>
+                                {{ form.store }}
+                            </div>
+                            <div class="form-group">
+                                <label for="id_image">Image</label>
+                                {{ form.image }}
+                            </div>
+                            <button type="submit" class="btn mb-1 btn-primary">Submit</button>
+                            <a href="{% url 'manager:store' %}" class="btn btn-secondary">Cancel</a>
+                        </form>
+                        {% if messages %}
+                            <div class="mt-3">
+                                {% for message in messages %}
+                                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                        {{ message }}
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">×</span>
+                                        </button>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

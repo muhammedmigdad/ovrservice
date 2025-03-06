@@ -26,6 +26,8 @@ urlpatterns = [
     
     path("contact/", views.contact, name="contact"),
     path("notification/", views.notification, name="notification"),
+    path('mark-notifications-read/', views.mark_notifications_as_read, name='mark-notifications-read'),
+    path('notification-count/', views.notification_count, name='notification-count'),
     path("tracking/", views.tracking, name="tracking"),
     
     
@@ -42,9 +44,4 @@ urlpatterns = [
     
     
     path('service/', views.request_service, name='service'),
-    # path('reviews/', views.reviews_list, name='reviews_list'),
-    path('mechanic-service/', views.mechanic_service, name='mechanic-service'),
-    path('mechanic-service-requst/<int:request_id>/', views.mechanic_service_request, name='mechanic-service-requst'),
-    path('update_status/<int:request_id>/', views.update_status, name='update_status'),
-    
 ]

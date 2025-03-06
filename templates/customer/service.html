@@ -1,65 +1,55 @@
-{% extends "base/customer-base.html" %} 
-
-{% block container %} 
-
+{% extends "base/customer-base.html" %}
+{% block container %}
 {% load static %}
 
 {% include 'includes/customer-header.html' %}
+
 <style>
     /* Disable background scrolling */
-/* Prevent background scrolling */
-.body-no-scroll {
-    overflow: hidden;
-}
-
-/* Ensure the modal content fits within the viewport */
-#request-modal .bg-white {
-    max-height: 90vh; /* Keeps the modal's height within the viewport */
-    overflow-y: auto; /* Adds scrolling for overflowing content */
-}
-
-
-.swip-container::-webkit-scrollbar {
-    width: 2px;
-    border-radius: 2px; /* Set the width of the scrollbar */
-}
-
-/* Customize the scrollbar thumb (the draggable part) */
-.swip-container::-webkit-scrollbar-thumb {
-    background-color: #5d5d5d; /* Set the color of the thumb */
-    border-radius: 24px;
-}
-
-/* Customize the scrollbar track (the non-draggable part) */
-.swip-container::-webkit-scrollbar-track {
-    background-color: #d9d9d9; /* Set the color of the track */
-    border-radius: 24px;
-}
-
-
-.spinner-border {
-    border: 4px solid rgba(255, 255, 255, 0.3);
-    border-top: 4px solid #A41E11; /* Your desired color */
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    0% {
-        transform: rotate(0deg);
+    .body-no-scroll {
+        overflow: hidden;
     }
-    100% {
-        transform: rotate(360deg);
-    }
-}
 
+    /* Ensure the modal content fits within the viewport */
+    #request-modal .bg-white {
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    /* Custom scrollbar */
+    .swip-container::-webkit-scrollbar {
+        width: 2px;
+        border-radius: 2px;
+    }
+
+    .swip-container::-webkit-scrollbar-thumb {
+        background-color: #5d5d5d;
+        border-radius: 24px;
+    }
+
+    .swip-container::-webkit-scrollbar-track {
+        background-color: #d9d9d9;
+        border-radius: 24px;
+    }
+
+    /* Spinner animation */
+    .spinner-border {
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-top: 4px solid #A41E11;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
 </style>
 
-
 <section class="home-bg text-white">
-    <section class="wrapper py-10 md:py-14 ">
+    <section class="wrapper py-10 md:py-14">
         <h2 class="text-3xl font-semibold mb-6 text-center text-[#A41E11]">Our Services</h2>
         <p class="text-lg text-gray-300 mb-10 text-center">
             We offer a variety of services to meet your needs.
@@ -79,8 +69,10 @@
                 <img src="{{ service.image.url }}" alt="{{ service.title }}" class="w-full rounded-lg mb-4">
                 <h3 class="text-xl font-semibold mb-2 text-[#ffffff]">{{ service.title }}</h3>
                 <p class="text-gray-400 mb-4">{{ service.description }}</p>
-                <button class="text-[#A41E11] font-semibold open-modal-btn" data-service-id="{{ service.id }}" data-service-title="{{ service.title }}">
-                    Request Service &darr;
+                <button class="text-[#A41E11] font-semibold open-modal-btn bg-white border-2 border-[#A41E11] rounded-md px-4 py-2 hover:bg-[#A41E11] hover:text-white transition-colors" 
+                data-service-id="{{ service.id }}" 
+                data-service-title="{{ service.title }}">
+                    Request Service ↓
                 </button>
             </div>
             {% endfor %}
@@ -92,7 +84,7 @@
 <div id="request-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
     <div class="bg-black p-6 rounded-lg shadow-lg w-11/12 sm:w-10/12 md:w-1/2 lg:w-1/3 max-h-[90vh] overflow-y-auto text-white">
         <h2 id="modal-title" class="text-2xl font-semibold mb-4 text-[#A41E11]">Request a Service</h2>
-        <form id="request-service-form" method="POST" action="">
+        <form id="request-service-form" method="POST" action="{% url 'customers:service' %}">
             {% csrf_token %}
             <div class="mb-4">
                 <label for="name" class="block font-semibold mb-1 text-[#fff]">Your Name</label>
@@ -119,21 +111,32 @@
                 <label for="details" class="block font-semibold mb-1 text-[#fff]">Details</label>
                 <textarea id="details" name="details" required class="w-full p-2 border border-gray-600 bg-black text-white rounded-lg" placeholder="Provide details about your request"></textarea>
             </div>
-            <button type="submit" class="w-full bg-[#A41E11] text-white py-2 rounded-lg font-semibold">Submit Request</button>
+
+            <!-- Hidden fields for latitude and longitude -->
+            <input type="hidden" id="latitude" name="latitude">
+            <input type="hidden" id="longitude" name="longitude">
+
+            <!-- Google Map -->
+            <div class="mb-4">
+                <label class="block font-semibold mb-1 text-[#fff]">Location</label>
+                <div class="w-full h-64 rounded-lg overflow-hidden">
+                    <div id="map" class="w-full h-full"></div>
+                </div>
+            </div>
+
+            <button type="submit" class="w-full bg-[#A41E11] text-white py-2 rounded-lg font-semibold hover:bg-[#8a1a0f] transition-colors">Submit Request</button>
         </form>
-        <button id="close-modal" class="mt-4 w-full bg-gray-700 text-white py-2 rounded-lg font-semibold">Close</button>
+        <button id="close-modal" class="mt-4 w-full bg-gray-700 text-white py-2 rounded-lg font-semibold hover:bg-gray-600 transition-colors">Close</button>
     </div>
 </div>
 
 <!-- Submit Animation -->
 <div id="submit-animation" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden z-50">
-    <div class="text-white text-lg font-semibold">
-        <div class="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full text-[#A41E11]"></div>
+    <div class="text-white text-lg font-semibold text-center">
+        <div class="spinner-border"></div>
         <p class="mt-4">Submitting your request...</p>
     </div>
 </div>
-
-
 
 <script>
     // JavaScript for modal and form submission
@@ -159,6 +162,56 @@
     closeModalButton.addEventListener('click', () => {
         modal.classList.add('hidden');
         body.classList.remove('body-no-scroll');
+    });
+
+    // Initialize Google Map
+    let map;
+    let marker;
+
+    function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: { lat: 10.8861, lng: 76.0622 }, // Default center (Valanchery, Kerala)
+            zoom: 15,
+        });
+
+        marker = new google.maps.Marker({
+            position: map.getCenter(),
+            map: map,
+            draggable: true,
+        });
+
+        // Update hidden fields with marker position
+        google.maps.event.addListener(marker, 'dragend', function() {
+            document.getElementById('latitude').value = marker.getPosition().lat();
+            document.getElementById('longitude').value = marker.getPosition().lng();
+        });
+
+        // Get user's current location
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((position) => {
+                const userLocation = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude,
+                };
+                map.setCenter(userLocation);
+                marker.setPosition(userLocation);
+                document.getElementById('latitude').value = userLocation.lat;
+                document.getElementById('longitude').value = userLocation.lng;
+            });
+        }
+    }
+
+    // Load Google Maps API
+    function loadGoogleMaps() {
+        const script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap`;
+        script.defer = true;
+        document.head.appendChild(script);
+    }
+
+    // Load Google Maps when the modal opens
+    openModalButtons.forEach(button => {
+        button.addEventListener('click', loadGoogleMaps);
     });
 
     // Submit form with AJAX
@@ -191,9 +244,4 @@
         }
     });
 </script>
-
-
-<script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
-<script src="./js/jquery-3.7.1.min.js"></script>
-<script src="./js/index.js"></script>
 {% endblock %}

@@ -1,0 +1,87 @@
+{% extends 'base/manager-base.html' %}
+{% load static %}
+
+{% block container %}
+{% include 'includes/manager-nav.html' %}
+
+<div class="content-body">
+    <div class="row page-titles mx-0">
+        <div class="col p-md-0">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="javascript:void(0)">Dashboard</a></li>
+                <li class="breadcrumb-item active"><a href="javascript:void(0)">Service Requests</a></li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h4 class="card-title text-gray-800 font-semibold">{{ instance|yesno:"Edit Service Request,Add Service Request" }}</h4>
+                        <div class="border-b border-gray-200 pb-4 mb-4">
+                            <form method="post" enctype="multipart/form-data" class="space-y-4">
+                                {% csrf_token %}
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div class="form-group">
+                                        <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.name.id_for_label }}">Name</label>
+                                        {{ form.name }}
+                                        {% if form.name.errors %}
+                                            <p class="text-red-500 text-xs mt-1">{{ form.name.errors|join:", " }}</p>
+                                        {% endif %}
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.email.id_for_label }}">Email (Optional)</label>
+                                        {{ form.email }}
+                                        {% if form.email.errors %}
+                                            <p class="text-red-500 text-xs mt-1">{{ form.email.errors|join:", " }}</p>
+                                        {% endif %}
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.phone.id_for_label }}">Phone</label>
+                                        {{ form.phone }}
+                                        {% if form.phone.errors %}
+                                            <p class="text-red-500 text-xs mt-1">{{ form.phone.errors|join:", " }}</p>
+                                        {% endif %}
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.service.id_for_label }}">Service</label>
+                                        {{ form.service }}
+                                        {% if form.service.errors %}
+                                            <p class="text-red-500 text-xs mt-1">{{ form.service.errors|join:", " }}</p>
+                                        {% endif %}
+                                    </div>
+                                    <div class="form-group md:col-span-2">
+                                        <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.details.id_for_label }}">Details</label>
+                                        {{ form.details }}
+                                        {% if form.details.errors %}
+                                            <p class="text-red-500 text-xs mt-1">{{ form.details.errors|join:", " }}</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="flex space-x-4">
+                                    <button type="submit" class="btn mb-1 btn-primary">Submit</button>
+                                    <a href="{% url 'manager:service_request' %}" class="flex-1 bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded shadow-md transition duration-200 text-center">Cancel</a>
+                                </div>
+                            </form>
+                            {% if messages %}
+                                <div class="mt-3">
+                                    {% for message in messages %}
+                                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                            {{ message }}
+                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                <span aria-hidden="true">×</span>
+                                            </button>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

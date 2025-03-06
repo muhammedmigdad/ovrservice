@@ -12,6 +12,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+TIME_ZONE = "Asia/Kolkata"  # Set this based on your region
+USE_TZ = True
+
 
 
 INSTALLED_APPS = [

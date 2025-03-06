@@ -3,65 +3,76 @@ from django.urls import reverse
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout, get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from providers.models import ProviderServiceRequest
+from providers.models import *
+from django.http import HttpResponseRedirect, HttpResponse
+from spareparts.models import *
+from .forms import *  # ✅ Import the correct form
+from common.functions import generate_form_errors
+from common.decorators import allow_provider
+
 
 User = get_user_model()  # ✅ Ensure using the custom user model
 
 
-@login_required(login_url="/app/mechanic-login/")
-def index(request):
-    """Mechanic dashboard"""
-    return render(request, "mechanic/index.html")  # ✅ Ensure this template exists
-
-
 def mechanic_login(request):
-    """Handles mechanic login."""
     if request.method == "POST":
-        email = request.POST.get("email", "").strip()
-        password = request.POST.get("password", "").strip()
+        form = MechanicLoginForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data["email"]
+            password = form.cleaned_data["password"]
+            user = authenticate(request, email=email, password=password)
 
-        if not email or not password:
-            messages.error(request, "Both email and password are required.")
-            return redirect(reverse("providers:mechanic-login"))
+            print(f"Form Data: Email={email}, Password={password}")
+            print(f"Authenticated User: {user}")
+            if user is not None:
+                print(f"User is_provider: {getattr(user, 'is_provider', False)}")
 
-        user = authenticate(request, email=email, password=password)
-
-        if user is not None and getattr(user, "is_provider", False):
-            auth_login(request, user)
-            messages.success(request, "Mechanic login successful!")
-            return redirect(reverse("providers:index"))
+                if getattr(user, "is_provider", False):
+                    auth_login(request, user)
+                    messages.success(request, "Login successful!")
+                    return redirect("providers:index")
+                else:
+                    messages.error(request, "Unauthorized access.")
+                    return redirect("providers:mechanic-login")
+            else:
+                messages.error(request, "Invalid email or password.")
         else:
-            messages.error(request, "Invalid email or not authorized as a mechanic.")
+            messages.error(request, "Form is invalid.")
+    else:
+        form = MechanicLoginForm()
 
-    return render(request, "mechanic/mechanic-login.html")  # ✅ Ensure this template exists
-
+    return render(request, "mechanic/mechanic-login.html", {"form": form})
 
 def logout_view(request):
-    """Logs out the mechanic and redirects to login page."""
-    auth_logout(request)
-    return redirect(reverse("mechanic:mechanic-login"))
+    return redirect('providers:mechanic-login')
 
 
+allow_provider
 @login_required(login_url="/app/mechanic-login/")
-def mechanic_service(request):
-    """View for mechanics to manage service requests"""
-    service_requests = ProviderServiceRequest.objects.all().order_by("-created_datetime")
-    return render(request, "mechanic/mechanic-service.html", {"service_requests": service_requests})
+def index(request):
+    instances = ServiceRequest.objects.all()  # Fixed model reference
+    context = {
+        'instances': instances,  # Use 'instances' in the template
+    }
+    """Mechanic dashboard"""
+    return render(request, "mechanic/index.html", context=context)  # ✅ Ensure this template exists
 
 
-@login_required(login_url="/app/mechanic-login/")
-def mechanic_service_request(request, request_id):
-    """Allow mechanics to update service request status"""
-    service_request = get_object_or_404(ProviderServiceRequest, id=request_id)
+allow_provider
+@login_required(login_url='/login/')
+def service_request_delete(request, id):
+    instance = get_object_or_404(ServiceRequest, id=id)  # Fixed model reference
+    instance.delete()
+    messages.success(request, f"Service request from '{instance.name}' deleted successfully.")
+    return redirect('mechanic:index')  # Ensure 'mechanic:index' is a valid URL
 
-    if request.method == "POST":
-        new_status = request.POST.get("status")
 
-        if new_status in ["pending", "in_progress", "completed"]:
-            service_request.status = new_status
-            service_request.save(update_fields=["status"])
-            messages.success(request, "Service request status updated successfully!")
-        else:
-            messages.error(request, "Invalid status selected.")
+def bill_view(request):
+    
+    return render(request, "mechanic/bill.html") 
 
-    return redirect("providers:mechanic-service")
+
+def traking_view(request):
+    
+    return render(request, "mechanic/traking.html") 
+

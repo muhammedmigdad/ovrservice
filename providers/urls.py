@@ -6,7 +6,8 @@ app_name = "providers"
 urlpatterns = [
     path("", views.index, name="index"),
     path("logout/", views.logout_view, name="logout"),
+    path("bill/", views.bill_view, name="bill"),
+    path("traking/", views.traking_view, name="traking"),
     path("mechanic-login/", views.mechanic_login, name="mechanic-login"),
-    path("mechanic-service/", views.mechanic_service, name="mechanic-service"),
-    path("mechanic-service-request/<int:request_id>/", views.mechanic_service_request, name="mechanic-service-request"),
+    path("service_request_delete/<int:id>/", views.service_request_delete, name="service_request_delete"),
 ]

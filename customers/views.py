@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.db.models import Q, Sum
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
+from django.utils.timezone import localtime
 from common.decorators import allow_manager
 from common.functions import generate_form_errors
 from django.core.validators import EmailValidator, ValidationError
@@ -142,9 +143,18 @@ def index(request):
 @login_required(login_url='/login/')
 def contact(request):
     return render(request, 'customer/contact.html')
-
+@login_required(login_url='/login/')
 def notification(request):
     return render(request, 'customer/notification.html')
+
+@login_required(login_url='/login/')
+def mark_notifications_as_read(request):
+    Notification.objects.filter(user=request.user, is_read=False).update(is_read=True)
+    return JsonResponse({"message": "Notifications marked as read"})
+@login_required(login_url='/login/')
+def notification_count(request):
+    count = Notification.objects.filter(user=request.user, is_read=False).count()
+    return JsonResponse({"count": count})
 
 def tracking(request):
     return render(request, 'customer/tracking.html')
@@ -499,16 +509,17 @@ def payment(request):
 @login_required(login_url='/login/')
 def order_success(request):
     return render(request, 'customer/ordersucces.html')
-
 @login_required(login_url='/login/')
 def orders(request, id):
-    """Display specific order details"""
     customer = get_object_or_404(Customer, user=request.user)
     try:
         order = Order.objects.get(id=id, customer=customer)
     except Order.DoesNotExist:
         raise Http404("Order not found or does not belong to you.")
     
+    # Convert to local time
+    order.created_datetime = localtime(order.created_datetime)
+
     context = {
         'order': order,
         'items': order.items.all()
@@ -606,99 +617,39 @@ def request_service(request):
     if query:
         services = services.filter(Q(title__icontains=query) | Q(description__icontains=query))
 
+    # Handle form submission
     if request.method == 'POST':
         name = request.POST.get('name')
         email = request.POST.get('email', '')
         phone = request.POST.get('phone')
         service_id = request.POST.get('service')
         details = request.POST.get('details')
+        latitude = request.POST.get('latitude')
+        longitude = request.POST.get('longitude')
 
-        if not name or not phone or not service_id or not details:
-            messages.error(request, "All fields are required")
+        # Validate required fields
+        if not all([name, phone, service_id, details, latitude, longitude]):
+            messages.error(request, "All fields are required, including location.")
             return redirect('customers:service')
 
-        try:
-            service = Service.objects.get(id=service_id)
-        except Service.DoesNotExist:
-            messages.error(request, "Invalid service selected")
-            return redirect('customers:service')
+        # Get the selected service
+        service = get_object_or_404(Service, id=service_id)
 
+        # Create the service request
         ServiceRequest.objects.create(
             name=name,
             email=email,
             phone=phone,
             service=service,
-            details=details
+            details=details,
+            latitude=latitude,
+            longitude=longitude
         )
 
         messages.success(request, "Service request submitted successfully!")
         return redirect('customers:service')
 
-    # Calculate cart count for authenticated users
-    cart_count = 0
-    if request.user.is_authenticated:
-        customer = Customer.objects.filter(user=request.user).first()
-        if customer:
-            cart_count = CartItem.objects.filter(customer=customer).aggregate(total=Sum('quantity'))['total'] or 0
-
-    context = {
-        'cart_count': cart_count,
+    return render(request, 'customer/service.html', {
         'services': services,
-        'query': query,  # Send query back to the template for input persistence
-    }
-
-    return render(request, 'customer/service.html', context)
-@login_required(login_url='/login/')
-def mechanic_service(request):
-    """View for mechanics to manage service requests"""
-    service_requests = ServiceRequest.objects.all().order_by('-created_datetime')
-
-    context = {
-        'service_requests': service_requests,
-    }
-    return render(request, 'mechanic/mechanic-service.html', context)
-
-@login_required(login_url='/login/')
-def mechanic_service_request(request, request_id):
-    """Allow mechanics to update service request status"""
-    user = request.user
-    
-    # Ensure only provider users can update requests
-    if not ProviderUser.objects.filter(user=user).exists():
-        messages.error(request, "Unauthorized access! You must be a provider to update service requests.")
-        return redirect('mechanics:mechanic_service')
-
-    # Fetch the service request
-    service_request = get_object_or_404(ServiceRequest, id=request_id)
-
-    if request.method == 'POST':
-        new_status = request.POST.get('status')
-
-        # Validate and update status
-        if new_status in ['pending', 'in_progress', 'completed']:
-            service_request.status = new_status
-            service_request.save(update_fields=['status'])
-            messages.success(request, "Service request status updated successfully!")
-        else:
-            messages.error(request, "Invalid status selected.")
-
-    return redirect('mechanics:mechanic-service')
-
-@login_required(login_url='/login/')
-def update_status(request, request_id):
-    # Fetch the service request by ID
-    service_request = get_object_or_404(ServiceRequest, id=request_id)
-
-    # Ensure the request method is POST
-    if request.method == 'POST':
-        new_status = request.POST.get('status')
-
-        # Validate and update the status
-        if new_status in ['pending', 'in_progress', 'completed']:
-            service_request.status = new_status
-            service_request.save(update_fields=['status'])
-            messages.success(request, "Status updated successfully!")
-        else:
-            messages.error(request, "Invalid status selected.")
-
-    return redirect('mechanics:mechanic-service')  # Ensure this matches your URL name
+        'query': query,
+    })

@@ -12,6 +12,8 @@ admin.site.register(OrderItem)
 admin.site.register(CartTotal)
 admin.site.register(Service)
 admin.site.register(ServiceRequest)
+admin.site.register(Notification)
+
 
 
 

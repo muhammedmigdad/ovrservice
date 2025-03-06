@@ -1,0 +1,22 @@
+.home-bg1 {
+    background-image: url('/static/web/images/bg2.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #000; /* Fallback in case image fails */
+}
+
+.home-bg2 {
+    background-image: url('/static/web/images/bg1.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #000;
+}
+
+.home-bg {
+    background-image: url('/static/web/images/bg3.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}

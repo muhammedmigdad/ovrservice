@@ -21,42 +21,32 @@
                 {% endfor %}
             </div>
         {% endif %}
-
         <form action="{% url 'providers:mechanic-login' %}" method="POST">
             {% csrf_token %}
-
+        
             <div class="mb-4">
-                <label for="email" class="block text-sm font-medium mb-1">E-mail</label>
-                <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    placeholder="Enter Email"
-                    class="w-full px-4 py-2 rounded-2xl text-black border bg-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                    required
-                />
+                <label for="{{ form.email.id_for_label }}" class="block text-sm font-medium mb-1">E-mail</label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <p class="text-red-500 text-sm">{{ form.email.errors.0 }}</p>
+                {% endif %}
             </div>
-
+        
             <div class="mb-4">
-                <label for="password" class="block text-sm font-medium mb-1">Password</label>
-                <input
-                    type="password"
-                    id="password"
-                    name="password"
-                    placeholder="Enter Password"
-                    class="w-full px-4 py-2 rounded-2xl text-black border bg-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                    required
-                />
+                <label for="{{ form.password.id_for_label }}" class="block text-sm font-medium mb-1">Password</label>
+                {{ form.password }}
+                {% if form.password.errors %}
+                    <p class="text-red-500 text-sm">{{ form.password.errors.0 }}</p>
+                {% endif %}
             </div>
-
-            <button
-                type="submit"
-                class="w-full bg-[#9fa616fb] hover:bg-[#b1ba08] text-black font-semibold py-2 px-4 rounded transition duration-200"
-            >
+        
+            <button type="submit" class="w-full bg-[#9fa616fb] hover:bg-[#b1ba08] text-black font-semibold py-2 px-4 rounded transition duration-200">
                 Login
             </button>
         </form>
+        
     </div>
 </section>
 
 {% endblock %}
+
